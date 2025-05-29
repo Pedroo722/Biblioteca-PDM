@@ -6,7 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'; // ou use outro ícone se preferir
 
 type Livro = {
   id: string;
@@ -72,7 +72,7 @@ export default MeusLivrosScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#95BFC5',
+    backgroundColor: 'black',
   },
   header: {
     backgroundColor: '#4dd0ff',
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 2,
-    backgroundColor: '#95BFC5',
+    backgroundColor: 'black',
     marginTop: 10,
   },
 });

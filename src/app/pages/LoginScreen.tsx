@@ -1,25 +1,17 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>('');
-  const [senha, setSenha] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   const handleLogin = (): void => {
-    if (!email || !senha) {
-      Alert.alert('Erro', 'Preencha todos os campos.');
+    if (!email || !password) {
+      Alert.alert('Error', 'Por favor preencha todos os campos.');
       return;
     }
 
-    // Simula autenticação
-    Alert.alert('Login', `Email: ${email}\nSenha: ${senha}`);
+    Alert.alert('Login', `Email: ${email}\nPassword: ${password}`);
   };
 
   return (
@@ -37,14 +29,14 @@ const LoginScreen: React.FC = () => {
 
       <TextInput
         style={styles.input}
-        placeholder="Senha"
-        value={senha}
-        onChangeText={setSenha}
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
         secureTextEntry
       />
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
+        <Text style={styles.buttonText}>Se Cadastrar</Text>
       </TouchableOpacity>
     </View>
   );

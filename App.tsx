@@ -1,113 +1,41 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-type Livro = {
-  id: string;
-  titulo: string;
-  multa: string;
-  dataEmprestimo: string;
-  dataDevolucao: string;
-};
+import LoginScreen from './src/app/pages/LoginScreen';
+import MyBooksScreen from './src/app/pages/MyBooksScreen';
 
-const livros: Livro[] = [
-  {
-    id: '1',
-    titulo: 'Nárnia',
-    multa: '0,75',
-    dataEmprestimo: '16/02/2025',
-    dataDevolucao: '16/05/2025',
-  },
-  {
-    id: '2',
-    titulo: 'Quarta asa',
-    multa: '0',
-    dataEmprestimo: '17/03/2025',
-    dataDevolucao: '20/05/2025',
-  },
-];
+const Tab = createBottomTabNavigator();
 
-const MeusLivrosScreen: React.FC = () => {
-  const renderItem = ({ item }: { item: Livro }) => (
-    <View style={styles.livroContainer}>
-      <Text style={styles.titulo}>{item.titulo}</Text>
-      <Text style={styles.texto}>Multa: {item.multa}</Text>
-      <Text style={styles.texto}>
-        Data de empréstimo: {item.dataEmprestimo}
-      </Text>
-      <Text style={styles.texto}>Data de devolução: {item.dataDevolucao}</Text>
-      <View style={styles.separator} />
-    </View>
-  );
-
+const App: React.FC = () => {
   return (
-    <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="menu" size={28} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Meus Livros</Text>
-      </View>
+    <NavigationContainer>
+      <Tab.Navigator
+        initialRouteName="Login"
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName: React.ComponentProps<typeof Ionicons>['name'];
 
-      {/* Lista de livros */}
-      <FlatList
-        data={livros}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.lista}
-      />
-    </View>
+            if (route.name === 'Login') {
+              iconName = focused ? 'log-in' : 'log-in-outline';
+            } else if (route.name === 'My Books') {
+              iconName = focused ? 'book' : 'book-outline';
+            } else {
+              iconName = 'ellipse';
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'blue',
+          tabBarInactiveTintColor: 'gray',
+        })}
+      >
+        <Tab.Screen name="Login" component={LoginScreen} />
+        <Tab.Screen name="My Books" component={MyBooksScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 };
 
-export default MeusLivrosScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#95BFC5',
-  },
-  header: {
-    backgroundColor: '#4dd0ff',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginLeft: 15,
-    color: 'black',
-  },
-  lista: {
-    backgroundColor: '#d9d9d9',
-    paddingVertical: 8,
-  },
-  livroContainer: {
-    padding: 12,
-    backgroundColor: '#d9d9d9',
-  },
-  titulo: {
-    color: 'blue',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  texto: {
-    color: 'black',
-    fontSize: 14,
-    marginTop: 4,
-  },
-  separator: {
-    height: 2,
-    backgroundColor: '#95BFC5',
-    marginTop: 10,
-  },
-});
+export default App;

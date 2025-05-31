@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import LoginScreen from './src/app/pages/LoginScreen';
 import MyBooksScreen from './src/app/pages/MyBooksScreen';
+import RegisterBook from './src/app/pages/RegisterBook';
+import RegisterClients from './src/app/pages/RegisterClients';
 
 const Tab = createBottomTabNavigator();
 

@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
-import { Appbar, IconButton, Button } from 'react-native-paper';
+import { View, StyleSheet, TextInput, Text, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { Button } from 'react-native-paper';
+import Header from '../../components/Header';
 
 const RegisterBook: React.FC = () => {
     const handleSave = () => {
@@ -13,80 +14,70 @@ const RegisterBook: React.FC = () => {
 
     return (
         <>
-            <Appbar.Header style={styles.appBar}>
-                <IconButton icon="menu" onPress={() => { }} />
-                <Appbar.Content title="Cadastrar Livro" titleStyle={styles.appBarTitle} />
-            </Appbar.Header>
+        <Header title="Cadastrar Livro" />
 
-            <ScrollView contentContainerStyle={styles.container}>
-                <View style={styles.form}>
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Título:</Text>
-                        <TextInput style={styles.input} placeholder="Digite o título:" />
-                    </View>
+        <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.form}>
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Título:</Text>
+                <TextInput style={styles.input} placeholder="Digite o título:" />
+            </View>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Autor:</Text>
-                        <TextInput style={styles.input} placeholder="Digite o autor(a):" />
-                    </View>
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Autor:</Text>
+                <TextInput style={styles.input} placeholder="Digite o autor(a):" />
+            </View>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Editora:</Text>
-                        <TextInput style={styles.input} placeholder="Digite a editora:" />
-                    </View>
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Editora:</Text>
+                <TextInput style={styles.input} placeholder="Digite a editora:" />
+            </View>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>ISBN (10):</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Digite o isbn de 10:"
-                            keyboardType="numeric"
-                            maxLength={10}
-                        />
-                    </View>
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>ISBN (10):</Text>
+                <TextInput
+                style={styles.input}
+                placeholder="Digite o isbn de 10:"
+                keyboardType="numeric"
+                maxLength={10}
+                />
+            </View>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Ano de Publicação:</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Digite o ano"
-                            keyboardType="numeric"
-                            maxLength={4}
-                        />
-                    </View>
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Ano de Publicação:</Text>
+                <TextInput
+                style={styles.input}
+                placeholder="Digite o ano"
+                keyboardType="numeric"
+                maxLength={4}
+                />
+            </View>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Sinopse:</Text>
-                        <TextInput
-                            style={[styles.input, styles.multilineInput]}
-                            placeholder="Digite a sinopse:"
-                            multiline
-                            numberOfLines={4}
-                        />
-                    </View>
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Sinopse:</Text>
+                <TextInput
+                style={[styles.input, styles.multilineInput]}
+                placeholder="Digite a sinopse:"
+                multiline
+                numberOfLines={4}
+                />
+            </View>
 
-                    <View style={styles.buttonRow}>
-                        <Button mode="contained" onPress={handleSave} style={styles.button} buttonColor="#00CFFF">
-                            Salvar
-                        </Button>
-                        <Button mode="outlined" onPress={handleCancel} style={styles.button} textColor="black">
-                            Cancelar
-                        </Button>
-                    </View>
-                </View>
-            </ScrollView>
+            <View style={styles.buttonRow}>
+                <Button mode="contained" onPress={handleSave} style={styles.button} buttonColor="#00CFFF">
+                Salvar
+                </Button>
+                <Button mode="outlined" onPress={handleCancel} style={styles.button} textColor="black">
+                Cancelar
+                </Button>
+            </View>
+            </View>
+        </ScrollView>
         </>
     );
 };
 
 const styles = StyleSheet.create({
-    appBar: {
-        backgroundColor: '#00CFFF',
-    },
-    appBarTitle: {
-        color: 'black',
-        fontWeight: 'bold',
-    },
     container: {
         flexGrow: 1,
         backgroundColor: '#95BFC5',

@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
-import { Appbar, IconButton, Button } from 'react-native-paper';
+import { View, StyleSheet, TextInput, Text, ScrollView, Alert, TouchableOpacity} from 'react-native';
+import { Button } from 'react-native-paper';
+import Header from '../../components/Header';
 
 const RegisterClient: React.FC = () => {
     const handleSave = () => {
@@ -13,68 +14,58 @@ const RegisterClient: React.FC = () => {
 
     return (
         <>
-            <Appbar.Header style={styles.appBar}>
-                <IconButton icon="menu" onPress={() => { }} />
-                <Appbar.Content title="Cadastrar Clientes" titleStyle={styles.appBarTitle} />
-            </Appbar.Header>
+        <Header title="Cadastrar Cliente" />
 
-            <ScrollView contentContainerStyle={styles.container}>
-                <View style={styles.form}>
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Nome:</Text>
-                        <TextInput style={styles.input} placeholder="Digite seu nome:" />
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Telefone:</Text>
-                        <TextInput style={styles.input} placeholder="Digite seu telefone:" keyboardType="phone-pad" />
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Email:</Text>
-                        <TextInput style={styles.input} placeholder="Digite seu email:" keyboardType="email-address" />
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Senha:</Text>
-                        <TextInput style={styles.input} placeholder="Digite sua senha:" secureTextEntry />
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Endereço:</Text>
-                        <TextInput
-                            style={[styles.input, styles.multilineInput]}
-                            placeholder="Digite seu endereço:"
-                            multiline
-                            numberOfLines={4}
-                        />
-                    </View>
-
-                    <View style={styles.buttonRow}>
-                        <Button mode="contained" onPress={handleSave} style={styles.button} buttonColor="#00CFFF">
-                            Salvar
-                        </Button>
-                        <Button mode="outlined" onPress={handleCancel} style={styles.button} textColor="black">
-                            Cancelar
-                        </Button>
-                    </View>
+        <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.form}>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Nome:</Text>
+                    <TextInput style={styles.input} placeholder="Digite seu nome:" />
                 </View>
-            </ScrollView>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Telefone:</Text>
+                    <TextInput style={styles.input} placeholder="Digite seu telefone:" keyboardType="phone-pad" />
+                </View>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Email:</Text>
+                    <TextInput style={styles.input} placeholder="Digite seu email:" keyboardType="email-address" />
+                </View>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Senha:</Text>
+                    <TextInput style={styles.input} placeholder="Digite sua senha:" secureTextEntry />
+                </View>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Endereço:</Text>
+                    <TextInput
+                        style={[styles.input, styles.multilineInput]}
+                        placeholder="Digite seu endereço:"
+                        multiline
+                        numberOfLines={4}
+                    />
+                </View>
+
+                <View style={styles.buttonRow}>
+                    <Button mode="contained" onPress={handleSave} style={styles.button} buttonColor="#00CFFF">
+                        Salvar
+                    </Button>
+                    <Button mode="outlined" onPress={handleCancel} style={styles.button} textColor="black">
+                        Cancelar
+                    </Button>
+                </View>
+            </View>
+        </ScrollView>
         </>
     );
 };
 
 const styles = StyleSheet.create({
-    appBar: {
-        backgroundColor: '#00CFFF',
-    },
-    appBarTitle: {
-        color: 'black',
-        fontWeight: 'bold',
-    },
     container: {
         flexGrow: 1,
-        backgroundColor: '#95BFC5', // Updated background color
+        backgroundColor: '#95BFC5',
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 20,

@@ -1,15 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, TextInput, Text, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import Header from '../../components/Header';
 
 const RegisterBook: React.FC = () => {
     const handleSave = () => {
         Alert.alert('Sucesso', 'Livro registrado com sucesso!');
-    };
-
-    const handleCancel = () => {
-        Alert.alert('Cancelado', 'Cadastro de livro cancelado.');
     };
 
     return (
@@ -64,11 +60,8 @@ const RegisterBook: React.FC = () => {
             </View>
 
             <View style={styles.buttonRow}>
-                <Button mode="contained" onPress={handleSave} style={styles.button} buttonColor="#00CFFF">
+                <Button mode="contained" onPress={handleSave} style={styles.button} buttonColor="#0D4F97">
                 Salvar
-                </Button>
-                <Button mode="outlined" onPress={handleCancel} style={styles.button} textColor="black">
-                Cancelar
                 </Button>
             </View>
             </View>

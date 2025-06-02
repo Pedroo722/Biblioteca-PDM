@@ -6,12 +6,12 @@ import { Ionicons } from '@expo/vector-icons';
 import LoginScreen from './src/screens/LoginScreen';
 
 import AccountBooks from './src/screens/customer/AccountBook';
-import LibraryBooks from './src/screens/customer/LibraryBooks';
+import LibraryBooks from './src/screens/customer/LibraryBook';
 
 import CreateLoan from './src/screens/librarian/CreateLoan';
 import ManageBooks from './src/screens/librarian/ManageBook';
-import ManageClients from './src/screens/librarian/ManageClients';
-import ManageLoans from './src/screens/librarian/ManageLoans';
+import ManageClients from './src/screens/librarian/ManageClient';
+import ManageLoans from './src/screens/librarian/ManageLoan';
 import RegisterBook from './src/screens/librarian/RegisterBook';
 import RegisterClients from './src/screens/librarian/RegisterClient';
 

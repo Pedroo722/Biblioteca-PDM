@@ -1,15 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, TextInput, Text, ScrollView, Alert, TouchableOpacity} from 'react-native';
+import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import Header from '../../components/Header';
 
 const RegisterClient: React.FC = () => {
     const handleSave = () => {
         Alert.alert('Sucesso', 'Cliente registrado com sucesso!');
-    };
-
-    const handleCancel = () => {
-        Alert.alert('Cancelado', 'Cadastro de Cliente cancelado.');
     };
 
     return (
@@ -49,11 +45,8 @@ const RegisterClient: React.FC = () => {
                 </View>
 
                 <View style={styles.buttonRow}>
-                    <Button mode="contained" onPress={handleSave} style={styles.button} buttonColor="#00CFFF">
+                    <Button mode="contained" onPress={handleSave} style={styles.button} buttonColor="#0D4F97">
                         Salvar
-                    </Button>
-                    <Button mode="outlined" onPress={handleCancel} style={styles.button} textColor="black">
-                        Cancelar
                     </Button>
                 </View>
             </View>
@@ -101,6 +94,7 @@ const styles = StyleSheet.create({
     button: {
         flex: 1,
         marginHorizontal: 5,
+        color: '#0D4F97',
     },
 });
 

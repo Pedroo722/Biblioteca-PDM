@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    color: '#0a2fc2',
+    color: '#0D4F97',
     fontWeight: 'bold',
   },
   bookDetails: {

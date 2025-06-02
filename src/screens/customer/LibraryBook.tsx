@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Modal,ScrollView} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const BookDetailScreen: React.FC = () => {
+const LibraryBook: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const book = {
-    title: 'Quarta asa',
+    title: 'As crônicas de nárnia',
     author: 'C. S. Lewis',
     status: 'Disponível',
     publisher: 'HarperCollins',
@@ -18,7 +18,6 @@ const BookDetailScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity>
           <Ionicons name="menu" size={24} color="#000" />
@@ -42,6 +41,7 @@ const BookDetailScreen: React.FC = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
+              <View></View>
               <Text style={styles.modalTitle}>{book.title}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Ionicons name="close" size={24} color="red" />
@@ -83,7 +83,7 @@ const BookDetailScreen: React.FC = () => {
   );
 };
 
-export default BookDetailScreen;
+export default LibraryBook;
 
 const styles = StyleSheet.create({
   container: {
@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
   bookTitle: {
     color: '#0D4F97',
     fontSize: 16,
+    fontWeight: 'bold',
   },
   bookMeta: {
     fontSize: 14,
@@ -128,12 +129,12 @@ const styles = StyleSheet.create({
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#0057A0',
+  
   },
   modalLabel: {
     fontWeight: '600',

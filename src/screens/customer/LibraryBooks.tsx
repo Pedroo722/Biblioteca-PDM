@@ -1,14 +1,156 @@
-import React from 'react';
-import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
-import { Appbar, IconButton, Button } from 'react-native-paper';
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Modal,ScrollView} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-const LibraryBooks: React.FC = () => {
-    return (
-        <>
-        </>
-    );
-}
+const BookDetailScreen: React.FC = () => {
+  const [modalVisible, setModalVisible] = useState(false);
 
-const styles = StyleSheet.create({});
+  const book = {
+    title: 'Quarta asa',
+    author: 'C. S. Lewis',
+    status: 'Disponível',
+    publisher: 'HarperCollins',
+    isbn: '857827069X',
+    year: '2005',
+    synopsis:
+      'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  };
 
-export default LibraryBooks;
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity>
+          <Ionicons name="menu" size={24} color="#000" />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Biblioteca</Text>
+        <TouchableOpacity>
+          <Ionicons name="search" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.bookItem}>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Text style={styles.bookTitle}>As crônicas de nárnia</Text>
+        </TouchableOpacity>
+        <Text style={styles.bookMeta}>Status: Disponível</Text>
+        <Text style={styles.bookMeta}>Editora: HarperCollins</Text>
+        <Text style={styles.bookMeta}>C. S. Lewis</Text>
+      </View>
+
+      <Modal visible={modalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{book.title}</Text>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <Ionicons name="close" size={24} color="red" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView>
+              <Text style={styles.modalLabel}>Autor(a): {book.author}</Text>
+
+              <View style={styles.row}>
+                <View style={styles.column}>
+                  <Text style={styles.modalLabel}>Status:</Text>
+                  <Text style={styles.readOnlyBox}>{book.status}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.modalLabel}>Editora:</Text>
+                  <Text style={styles.readOnlyBox}>{book.publisher}</Text>
+                </View>
+              </View>
+
+              <View style={styles.row}>
+                <View style={styles.column}>
+                  <Text style={styles.modalLabel}>ISBN:</Text>
+                  <Text style={styles.readOnlyBox}>{book.isbn}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.modalLabel}>Ano de publicação:</Text>
+                  <Text style={styles.readOnlyBox}>{book.year}</Text>
+                </View>
+              </View>
+
+              <Text style={styles.modalLabel}>Sinopse:</Text>
+              <Text style={styles.readOnlyBox}>{book.synopsis}</Text>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
+
+export default BookDetailScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#9AC0C5',
+  },
+  header: {
+    backgroundColor: '#00CFFF',
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  bookItem: {
+    backgroundColor: '#ddd',
+    padding: 10,
+    marginTop: 5,
+  },
+  bookTitle: {
+    color: '#0D4F97',
+    fontSize: 16,
+  },
+  bookMeta: {
+    fontSize: 14,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#00000099',
+    padding: 20,
+  },
+  modalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#0057A0',
+  },
+  modalLabel: {
+    fontWeight: '600',
+    marginTop: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
+  },
+  column: {
+    flex: 1,
+  },
+  readOnlyBox: {
+    backgroundColor: '#ffffff',
+    borderRadius: 6,
+    padding: 10,
+    minHeight: 40,
+  },
+});

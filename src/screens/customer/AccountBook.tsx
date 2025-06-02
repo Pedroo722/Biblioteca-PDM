@@ -20,7 +20,7 @@ const books: Book[] = [
   },
 ];
 
-const AccountBooks: React.FC = () => {
+const AccountBook: React.FC = () => {
   const renderItem = ({ item }: { item: Book }) => (
     <View style={styles.bookContainer}>
       <Text style={styles.title}>{item.title}</Text>
@@ -37,7 +37,7 @@ const AccountBooks: React.FC = () => {
         <TouchableOpacity>
           <Ionicons name="menu" size={28} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Books</Text>
+        <Text style={styles.headerTitle}>Meus Livros</Text>
       </View>
       <FlatList
         data={books}
@@ -49,7 +49,7 @@ const AccountBooks: React.FC = () => {
   );
 };
 
-export default AccountBooks;
+export default AccountBook;
 
 const styles = StyleSheet.create({
   container: {

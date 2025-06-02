@@ -5,11 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 
 import LoginScreen from './src/screens/LoginScreen';
 
-import AccountBooks from './src/screens/customer/AccountBooks';
+import AccountBooks from './src/screens/customer/AccountBook';
 import LibraryBooks from './src/screens/customer/LibraryBooks';
 
 import CreateLoan from './src/screens/librarian/CreateLoan';
-import ManageBooks from './src/screens/librarian/ManageBooks';
+import ManageBooks from './src/screens/librarian/ManageBook';
 import ManageClients from './src/screens/librarian/ManageClients';
 import ManageLoans from './src/screens/librarian/ManageLoans';
 import RegisterBook from './src/screens/librarian/RegisterBook';
@@ -26,7 +26,7 @@ const App: React.FC = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName: React.ComponentProps<typeof Ionicons>['name'];
 
-            if (route.name === 'Login') {
+            if (route.name === 'a') {
               iconName = focused ? 'log-in' : 'log-in-outline';
             } else if (route.name === 'My Books') {
               iconName = focused ? 'book' : 'book-outline';
@@ -43,16 +43,16 @@ const App: React.FC = () => {
         <Tab.Screen name="Login" component={LoginScreen} />
 
         {/* Telas do Usuário */}
-        <Tab.Screen name="My Books" component={AccountBooks} />
-        <Tab.Screen name="Library Books" component={LibraryBooks} />
+        <Tab.Screen name="b" component={AccountBooks} />
+        <Tab.Screen name="c" component={LibraryBooks} />
 
         {/* Telas do Funcionário */}
-        <Tab.Screen name="My Books" component={CreateLoan} />
-        <Tab.Screen name="Library Books" component={ManageBooks} />
-        <Tab.Screen name="My Books" component={ManageClients} />
-        <Tab.Screen name="Library Books" component={ManageLoans} />
-        <Tab.Screen name="My Books" component={RegisterBook} />
-        <Tab.Screen name="Library Books" component={RegisterClients} />
+        <Tab.Screen name="d" component={CreateLoan} />
+        <Tab.Screen name="e" component={ManageBooks} />
+        <Tab.Screen name="f" component={ManageClients} />
+        <Tab.Screen name="g" component={ManageLoans} />
+        <Tab.Screen name="h" component={RegisterBook} />
+        <Tab.Screen name="i" component={RegisterClients} />
 
 
       </Tab.Navigator>

@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Book } from '../model/Book';
+import { Book } from '../../model/book/BookEntity';
 
 const books: Book[] = [
   {
@@ -21,10 +20,8 @@ const books: Book[] = [
   },
 ];
 
-const MyBooksScreen: React.FC = () => {
+const AccountBooks: React.FC = () => {
   const renderItem = ({ item }: { item: Book }) => (
-
-    
     <View style={styles.bookContainer}>
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.text}>Multa: {item.fine}</Text>
@@ -40,11 +37,8 @@ const MyBooksScreen: React.FC = () => {
         <TouchableOpacity>
           <Ionicons name="menu" size={28} color="black" />
         </TouchableOpacity>
-      <View style={{ width: 24 }} /> 
         <Text style={styles.headerTitle}>My Books</Text>
-      <View style={{ width: 24 }} /> 
       </View>
-     
       <FlatList
         data={books}
         keyExtractor={(item) => item.id}
@@ -55,7 +49,7 @@ const MyBooksScreen: React.FC = () => {
   );
 };
 
-export default MyBooksScreen;
+export default AccountBooks;
 
 const styles = StyleSheet.create({
   container: {
@@ -70,11 +64,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   headerTitle: {
-  fontSize: 20,
-  fontWeight: 'bold',
-  color: 'black',
-  textAlign: 'center',
-  flex: 1, 
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: 15,
+    color: 'black',
   },
   list: {
     backgroundColor: '#d9d9d9',

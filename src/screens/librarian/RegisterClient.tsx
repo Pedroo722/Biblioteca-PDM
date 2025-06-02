@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
 import { Appbar, IconButton, Button } from 'react-native-paper';
 
-const RegisterClients = () => {
+const RegisterClient: React.FC = () => {
     const handleSave = () => {
         Alert.alert('Sucesso', 'Cliente registrado com sucesso!');
     };
@@ -113,4 +113,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default RegisterClients;
+export default RegisterClient;

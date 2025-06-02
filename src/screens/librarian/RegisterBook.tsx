@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
 import { Appbar, IconButton, Button } from 'react-native-paper';
 
-const RegisterBook = () => {
+const RegisterBook: React.FC = () => {
     const handleSave = () => {
         Alert.alert('Sucesso', 'Livro registrado com sucesso!');
     };

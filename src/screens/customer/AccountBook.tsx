@@ -1,7 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { Book } from '../../model/book/BookEntity';
+
+type DrawerParamList = {
+  'Meus Livros': undefined;
+  'Criar Empréstimo': undefined;
+  'Gerenciar Livros': undefined;
+  'Gerenciar Clientes': undefined;
+  'Gerenciar Empréstimos': undefined;
+  'Cadastrar Livro': undefined;
+  'Cadastrar Cliente': undefined;
+};
 
 const books: Book[] = [
   {
@@ -23,12 +35,14 @@ const books: Book[] = [
 ];
 
 const AccountBook: React.FC = () => {
+  const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
+
   const renderItem = ({ item }: { item: Book }) => (
     <View style={styles.bookContainer}>
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.text}>Autor: {item.author}</Text>
       <Text style={styles.text}>Multa: {item.fine}</Text>
-      <Text style={styles.text}>Data de Emprestimo: {item.loanDate}</Text>
+      <Text style={styles.text}>Data de Empréstimo: {item.loanDate}</Text>
       <Text style={styles.text}>Data de Retorno: {item.returnDate}</Text>
       <View style={styles.separator} />
     </View>
@@ -37,11 +51,12 @@ const AccountBook: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.openDrawer()}>
           <Ionicons name="menu" size={28} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Meus Livros</Text>
       </View>
+
       <FlatList
         data={books}
         keyExtractor={(item) => item.id}
@@ -57,7 +72,7 @@ export default AccountBook;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#95BFC5'
+    backgroundColor: '#95BFC5',
   },
   header: {
     backgroundColor: '#4dd0ff',
@@ -71,7 +86,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     textAlign: 'center',
-    flex: 1, 
+    flex: 1,
+    marginRight: 28, 
   },
   list: {
     backgroundColor: '#d9d9d9',

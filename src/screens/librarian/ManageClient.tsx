@@ -15,16 +15,6 @@ const ManageClient: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="menu" size={24} color="#000" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Gerenciar Cliente</Text>
-        <TouchableOpacity>
-          <Ionicons name="search" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.clientItem}>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text style={styles.clientName}>João Lima</Text>
@@ -98,17 +88,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#9AC0C5',
-  },
-  header: {
-    backgroundColor: '#00CFFF',
-    padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  headerText: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   clientItem: {
     backgroundColor: '#ddd',

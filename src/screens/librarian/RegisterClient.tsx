@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
-import Header from '../../components/Header';
+
 
 const RegisterClient: React.FC = () => {
     const handleSave = () => {
@@ -10,7 +10,7 @@ const RegisterClient: React.FC = () => {
 
     return (
         <>
-        <Header title="Cadastrar Cliente" />
+
 
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.form}>

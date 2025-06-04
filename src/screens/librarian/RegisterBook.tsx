@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
-import Header from '../../components/Header';
+
 
 const RegisterBook: React.FC = () => {
     const handleSave = () => {
@@ -10,8 +10,6 @@ const RegisterBook: React.FC = () => {
 
     return (
         <>
-        <Header title="Cadastrar Livro" />
-
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.form}>
             <View style={styles.inputGroup}>

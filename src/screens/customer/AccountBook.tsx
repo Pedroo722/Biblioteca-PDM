@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { Book } from '../../model/book/BookEntity';
@@ -50,13 +49,6 @@ const AccountBook: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={28} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Meus Livros</Text>
-      </View>
-
       <FlatList
         data={books}
         keyExtractor={(item) => item.id}
@@ -73,21 +65,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#95BFC5',
-  },
-  header: {
-    backgroundColor: '#4dd0ff',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
-    textAlign: 'center',
-    flex: 1,
-    marginRight: 28, 
   },
   list: {
     backgroundColor: '#d9d9d9',

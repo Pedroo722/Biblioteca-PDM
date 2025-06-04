@@ -18,16 +18,6 @@ const LibraryBook: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="menu" size={24} color="#000" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Biblioteca</Text>
-        <TouchableOpacity>
-          <Ionicons name="search" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.bookItem}>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text style={styles.bookTitle}>As crônicas de nárnia</Text>
@@ -89,18 +79,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#9AC0C5',
-  },
-  header: {
-    backgroundColor: '#00CFFF',
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
   },
   bookItem: {
     backgroundColor: '#ddd',

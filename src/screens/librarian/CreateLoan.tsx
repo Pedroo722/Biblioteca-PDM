@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Text, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { Ionicons } from '@expo/vector-icons';
+
 
 const livrosMock = ['Nárnia', 'Quarta asa', 'O Hobbit'];
 const clientesMock = ['Maria', 'João', 'Ana'];
@@ -24,12 +24,6 @@ const CreateLoan: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Ionicons name="menu" size={24} color="black" />
-        <Text style={styles.headerTitle}>Criar Emprestimo</Text>
-        <View style={{ width: 24 }} /> 
-      </View>
-
       <View style={styles.form}>
         <Text style={styles.label}>Título do Livro:</Text>
         <View style={styles.pickerContainer}>
@@ -79,17 +73,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#99c2c9',
-  },
-  header: {
-    backgroundColor: '#00cfff',
-    padding: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   form: {
     backgroundColor: '#e0e0e0',

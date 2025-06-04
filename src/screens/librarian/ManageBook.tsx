@@ -75,18 +75,7 @@ const ManageBook: React.FC = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="menu" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Gerenciar Livros</Text>
-        <TouchableOpacity>
-          <Ionicons name="search" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
-
-
+    <View style={styles.container}>     
       <FlatList
         data={livros}
         keyExtractor={(item) => item.id}
@@ -181,17 +170,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#b2d8db',
-  },
-  header: {
-    backgroundColor: '#4dd0ff',
-    padding: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   bookItem: {
     backgroundColor: '#e0e0e0',

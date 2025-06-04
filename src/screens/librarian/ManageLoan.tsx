@@ -26,12 +26,6 @@ const ManageLoan: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Ionicons name="menu" size={24} color="#000" />
-                <Text style={styles.headerText}>Emprestimo</Text>
-                <Ionicons name="search" size={24} color="#000" />
-            </View>
-
             <View style={styles.loanBox}>
                 <TouchableOpacity onPress={() => setBookModalVisible(true)}>
                     <Text style={styles.clickableTitle}>{bookDetails.title}</Text>
@@ -114,17 +108,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#9AC0C5',
-    },
-    header: {
-        backgroundColor: '#00CFFF',
-        padding: 16,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    headerText: {
-        fontWeight: 'bold',
-        fontSize: 18,
     },
     loanBox: {
         backgroundColor: '#D9D9D9',

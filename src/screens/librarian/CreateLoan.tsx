@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 
 
 const livrosMock = ['Nárnia', 'Quarta asa', 'O Hobbit'];
-const clientesMock = ['Maria', 'João', 'Ana'];
+const clientesMock = ['Maria@gmail.com', 'João@gmail.com', 'Ana@gmail.com'];
 
 const CreateLoan: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<string>('');
@@ -38,7 +38,7 @@ const CreateLoan: React.FC = () => {
           </Picker>
         </View>
 
-        <Text style={styles.label}>Nome do Cliente:</Text>
+        <Text style={styles.label}>Email do Cliente:</Text>
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={selectedClient}

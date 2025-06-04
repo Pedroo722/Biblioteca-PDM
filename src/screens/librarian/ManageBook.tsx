@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    color: '#0a2fc2',
+    color: '#0D4F97',
     fontWeight: 'bold',
     marginBottom: 10,
     alignSelf: 'center',

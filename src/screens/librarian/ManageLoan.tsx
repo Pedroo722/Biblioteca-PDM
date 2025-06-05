@@ -87,10 +87,25 @@ const ManageLoan: React.FC = () => {
               <Text style={styles.clickableTitle}>{loan.email}</Text>
             </TouchableOpacity>
 
-            <Text style={styles.labelRed}>Multa: {loan.fine}</Text>
-            <Text>Status: {loan.status}</Text>
-            <Text>Data de empréstimo: {loan.loanDate}</Text>
-            <Text>Data de retorno: {loan.returnDate}</Text>
+            <View style={styles.infoRow}>
+              <Text style={[styles.labelBold, styles.labelRed]}>Multa:</Text>
+              <Text>{loan.fine}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.labelBold}>Status:</Text>
+              <Text>{loan.status}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.labelBold}>Data de empréstimo:</Text>
+              <Text>{loan.loanDate}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.labelBold}>Data de retorno:</Text>
+              <Text>{loan.returnDate}</Text>
+            </View>
 
             <View style={styles.buttonRow}>
               <TouchableOpacity style={styles.buttonBlue} onPress={() => handleFinalize(loan.id)}>
@@ -105,7 +120,7 @@ const ManageLoan: React.FC = () => {
       </ScrollView>
       <Modal visible={bookModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
+          <View style={[styles.modalContainer, styles.centeredContent]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, styles.centerText]}>
                 {selectedLoan?.title}
@@ -114,16 +129,28 @@ const ManageLoan: React.FC = () => {
                 <Ionicons name="close" size={24} color="red" />
               </TouchableOpacity>
             </View>
-            <Text style={styles.centerText}>Status: {selectedLoan?.status}</Text>
-            <Text>Data de empréstimo: {selectedLoan?.loanDate}</Text>
-            <Text>Data de retorno: {selectedLoan?.returnDate}</Text>
+
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Status:</Text>
+              <Text>{selectedLoan?.status}</Text>
+            </View>
+
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Data de empréstimo:</Text>
+              <Text>{selectedLoan?.loanDate}</Text>
+            </View>
+
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Data de retorno:</Text>
+              <Text>{selectedLoan?.returnDate}</Text>
+            </View>
           </View>
         </View>
       </Modal>
 
       <Modal visible={clientModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
+          <View style={[styles.modalContainer, styles.centeredContent]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, styles.centerText]}>
                 {selectedLoan?.name}
@@ -132,8 +159,16 @@ const ManageLoan: React.FC = () => {
                 <Ionicons name="close" size={24} color="red" />
               </TouchableOpacity>
             </View>
-            <Text style={styles.centerText}>Email: {selectedLoan?.email}</Text>
-            <Text style={styles.centerText}>Multa: {selectedLoan?.fine}</Text>
+
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Email:</Text>
+              <Text>{selectedLoan?.email}</Text>
+            </View>
+
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Multa:</Text>
+              <Text>{selectedLoan?.fine}</Text>
+            </View>
           </View>
         </View>
       </Modal>
@@ -215,6 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 15,
     padding: 20,
+    fontWeight: 'bold',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -239,4 +275,23 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontWeight: 'bold',
   },
+  labelBold: {
+  fontWeight: 'bold',
+  fontSize: 14,
+  textAlign: 'center',
+},
+
+centeredContent: {
+  alignItems: 'center',
+},
+
+modalContentItem: {
+  marginVertical: 5,
+  alignItems: 'center',
+},
+infoRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
 });

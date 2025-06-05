@@ -65,9 +65,18 @@ const LibraryBook: React.FC = () => {
             <TouchableOpacity onPress={() => openModal(book)}>
               <Text style={styles.bookTitle}>{book.title}</Text>
             </TouchableOpacity>
-            <Text style={styles.bookMeta}>Status: {book.status}</Text>
-            <Text style={styles.bookMeta}>Editora: {book.publisher}</Text>
-            <Text style={styles.bookMeta}>{book.author}</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Status:</Text>
+              <Text style={styles.bookMeta}>{book.status}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Editora:</Text>
+              <Text style={styles.bookMeta}>{book.publisher}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Autor:</Text>
+              <Text style={styles.bookMeta}>{book.author}</Text>
+            </View>
           </View>
         ))}
       </ScrollView>
@@ -190,5 +199,15 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 10,
     minHeight: 40,
+  },
+  infoRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginTop: 4,
+  },
+  label: {
+    fontWeight: 'bold',
+    fontSize: 14,
+    marginRight: 4,
   },
 });

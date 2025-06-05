@@ -71,11 +71,20 @@ const ManageBook: React.FC = () => {
       }}
     >
       <Text style={styles.title}>{item.titulo}</Text>
-      <View style={styles.bookDetails}>
-        <Text>{item.autor}</Text>
-        <Text>Status: {item.status}</Text>
-        <Text>Editora: {item.editora}</Text>
-      </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Autor:</Text>
+          <Text>{item.autor}</Text>
+        </View>
+        <View style={styles.infoRow}>
+           <Text style={styles.label}>Status:</Text>
+          <Text>{item.status}</Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Editora:</Text>
+          <Text>{item.editora}</Text>
+        </View>
+      
     </TouchableOpacity>
   );
 
@@ -258,4 +267,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  infoRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+label: {
+  fontWeight: 'bold',
+  marginRight: 4,
+  fontSize: 14,
+},
 });

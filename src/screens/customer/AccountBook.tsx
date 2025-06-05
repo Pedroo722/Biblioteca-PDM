@@ -49,9 +49,18 @@ const AccountBook: React.FC = () => {
   const renderItem = ({ item }: { item: Loan }) => (
     <TouchableOpacity onPress={() => openModal(item)} style={styles.bookContainer}>
       <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.text}>Multa: {item.fine}</Text>
-      <Text style={styles.text}>Data de Empréstimo: {item.loanDate}</Text>
-      <Text style={styles.text}>Data de Retorno: {item.returnDate}</Text>
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Multa:</Text>
+        <Text style={styles.text}>{item.fine}</Text>
+      </View>
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Data de Empréstimo:</Text>
+        <Text style={styles.text}>{item.loanDate}</Text>
+      </View>
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Data de Retorno:</Text>
+        <Text style={styles.text}>{item.returnDate}</Text>
+      </View>
       <View style={styles.separator} />
     </TouchableOpacity>
   );
@@ -98,7 +107,7 @@ const AccountBook: React.FC = () => {
                     <Text style={styles.readOnlyBox}>{selectedBook.fine}</Text>
                   </View>
                 </View>
-                
+
                 <View style={styles.row}>
                   <View style={styles.column}>
                     <Text style={styles.modalLabel}>Data de Empréstimo:</Text>
@@ -187,4 +196,14 @@ const styles = StyleSheet.create({
     padding: 10,
     minHeight: 40,
   },
+  infoRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginTop: 4,
+  },
+  label: {
+  fontWeight: 'bold',
+  fontSize: 14,
+  marginRight: 4,
+},
 });

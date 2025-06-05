@@ -1,33 +1,87 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Text, ScrollView, TouchableOpacity, Modal} from 'react-native';
+import { View, StyleSheet, TextInput, Text, ScrollView, TouchableOpacity, Modal, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+interface Client {
+  name: string;
+  phone: string;
+  email: string;
+  password: string;
+  address: string;
+}
 
 const ManageClient: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [searchEmail, setSearchEmail] = useState('');
 
-  const [client, setClient] = useState({
-    name: 'João Lima',
-    phone: '(83) 96666-6666',
-    email: 'lima.joao@gmail.com',
-    password: '123456',
-    address: 'Rua ali no canto 121',
-  });
+  const [clients, setClients] = useState<Client[]>([
+    {
+      name: 'João Lima',
+      phone: '(83) 96666-6666',
+      email: 'lima.joao@gmail.com',
+      password: '123456',
+      address: 'Rua ali no canto 121',
+    },
+    {
+      name: 'Maria Silva',
+      phone: '(11) 95555-5555',
+      email: 'maria.silva@gmail.com',
+      password: 'abcdef',
+      address: 'Avenida das Flores, 123',
+    },
+    {
+      name: 'Carlos Souza',
+      phone: '(21) 97777-7777',
+      email: 'carlos.souza@gmail.com',
+      password: '7891011',
+      address: 'Rua das Palmeiras, 99',
+    },
+  ]);
+
+  const filteredClients = clients.filter((client) =>
+    client.email.toLowerCase().includes(searchEmail.toLowerCase())
+  );
+
+  const handleEdit = (field: keyof Client, value: string) => {
+    if (selectedClient) {
+      setSelectedClient({ ...selectedClient, [field]: value });
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.clientItem}>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Text style={styles.clientName}>João Lima</Text>
-        </TouchableOpacity>
-        <Text style={styles.clientInfo}>Telefone: (83) 96666-6666</Text>
-        <Text style={styles.clientInfo}>Email: xxxx@gmail.com</Text>
-      </View>
+      <TextInput
+        placeholder="Pesquisar por e-mail"
+        style={styles.searchInput}
+        value={searchEmail}
+        onChangeText={setSearchEmail}
+      />
+
+      <FlatList
+        data={filteredClients}
+        keyExtractor={(item) => item.email}
+        renderItem={({ item }) => (
+          <View style={styles.clientItem}>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedClient(item);
+                setModalVisible(true);
+              }}
+            >
+              <Text style={styles.clientName}>{item.name}</Text>
+            </TouchableOpacity>
+            <Text style={styles.clientInfo}>Telefone: {item.phone}</Text>
+            <Text style={styles.clientInfo}>Email: {item.email}</Text>
+          </View>
+        )}
+      />
 
       <Modal visible={modalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{client.name}</Text>
+              <Text style={styles.modalTitle}>{selectedClient?.name}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Ionicons name="close" size={24} color="red" />
               </TouchableOpacity>
@@ -37,38 +91,30 @@ const ManageClient: React.FC = () => {
               <Text style={styles.label}>Telefone:</Text>
               <TextInput
                 style={styles.input}
-                value={client.phone}
-                onChangeText={(text) =>
-                  setClient({ ...client, phone: text })
-                }
+                value={selectedClient?.phone}
+                onChangeText={(text) => handleEdit('phone', text)}
               />
 
               <Text style={styles.label}>Email:</Text>
               <TextInput
                 style={styles.input}
-                value={client.email}
-                onChangeText={(text) =>
-                  setClient({ ...client, email: text })
-                }
+                value={selectedClient?.email}
+                onChangeText={(text) => handleEdit('email', text)}
               />
 
               <Text style={styles.label}>Senha:</Text>
               <TextInput
                 style={styles.input}
                 secureTextEntry
-                value={client.password}
-                onChangeText={(text) =>
-                  setClient({ ...client, password: text })
-                }
+                value={selectedClient?.password}
+                onChangeText={(text) => handleEdit('password', text)}
               />
 
               <Text style={styles.label}>Endereço:</Text>
               <TextInput
                 style={styles.input}
-                value={client.address}
-                onChangeText={(text) =>
-                  setClient({ ...client, address: text })
-                }
+                value={selectedClient?.address}
+                onChangeText={(text) => handleEdit('address', text)}
               />
 
               <TouchableOpacity style={styles.button}>
@@ -88,11 +134,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#9AC0C5',
+    paddingHorizontal: 10,
+  },
+  searchInput: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 8,
   },
   clientItem: {
     backgroundColor: '#ddd',
     padding: 12,
-    marginTop: 5,
+    marginVertical: 5,
+    borderRadius: 8,
   },
   clientName: {
     color: '#0D4F97',

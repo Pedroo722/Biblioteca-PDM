@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity, Modal, FlatList,} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Text,
+  TouchableOpacity,
+  Modal,
+  FlatList,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
 type Livro = {
   id: string;
   titulo: string;
@@ -40,6 +49,9 @@ const ManageBook: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<Livro | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  const [searchTitle, setSearchTitle] = useState('');
+  const [searchAuthor, setSearchAuthor] = useState('');
+
   const handleFieldChange = (field: keyof Livro, value: string) => {
     if (selectedBook) {
       setSelectedBook({ ...selectedBook, [field]: value });
@@ -56,6 +68,12 @@ const ManageBook: React.FC = () => {
       setIsEditing(false);
     }
   };
+
+  const filteredBooks = livros.filter(
+    (livro) =>
+      livro.titulo.toLowerCase().includes(searchTitle.toLowerCase()) &&
+      livro.autor.toLowerCase().includes(searchAuthor.toLowerCase())
+  );
 
   const renderItem = ({ item }: { item: Livro }) => (
     <TouchableOpacity
@@ -75,9 +93,23 @@ const ManageBook: React.FC = () => {
   );
 
   return (
-    <View style={styles.container}>     
+    <View style={styles.container}>
+      {/* Campos de busca */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar por título"
+        value={searchTitle}
+        onChangeText={setSearchTitle}
+      />
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar por autor"
+        value={searchAuthor}
+        onChangeText={setSearchAuthor}
+      />
+
       <FlatList
-        data={livros}
+        data={filteredBooks}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: 30 }}
@@ -170,12 +202,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#b2d8db',
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
+  searchInput: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
   },
   bookItem: {
     backgroundColor: '#e0e0e0',
     padding: 10,
     marginVertical: 6,
-    marginHorizontal: 10,
     borderRadius: 6,
   },
   title: {

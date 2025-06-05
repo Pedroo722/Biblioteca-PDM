@@ -1,74 +1,132 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Modal,ScrollView} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+  TextInput,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const LibraryBook: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [searchTitle, setSearchTitle] = useState('');
+  const [searchAuthor, setSearchAuthor] = useState('');
 
-  const book = {
-    title: 'As crônicas de nárnia',
-    author: 'C. S. Lewis',
-    status: 'Disponível',
-    publisher: 'HarperCollins',
-    isbn: '857827069X',
-    year: '2005',
-    synopsis:
-      'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  const books = [
+    {
+      title: 'As crônicas de nárnia',
+      author: 'C. S. Lewis',
+      status: 'Disponível',
+      publisher: 'HarperCollins',
+      isbn: '857827069X',
+      year: '2005',
+      synopsis:
+        'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    },
+    {
+      title: 'O Senhor dos Anéis',
+      author: 'J. R. R. Tolkien',
+      status: 'Indisponível',
+      publisher: 'Martins Fontes',
+      isbn: '8533615546',
+      year: '1954',
+      synopsis:
+        'Uma aventura épica sobre a luta entre o bem e o mal na Terra Média.',
+    },
+  ];
+
+  const filteredBooks = books.filter(
+    (book) =>
+      book.title.toLowerCase().includes(searchTitle.toLowerCase()) &&
+      book.author.toLowerCase().includes(searchAuthor.toLowerCase())
+  );
+
+  const openModal = (book: any) => {
+    setSelectedBook(book);
+    setModalVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.bookItem}>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Text style={styles.bookTitle}>As crônicas de nárnia</Text>
-        </TouchableOpacity>
-        <Text style={styles.bookMeta}>Status: Disponível</Text>
-        <Text style={styles.bookMeta}>Editora: HarperCollins</Text>
-        <Text style={styles.bookMeta}>C. S. Lewis</Text>
+      {/* Search inputs */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Buscar por título"
+          value={searchTitle}
+          onChangeText={setSearchTitle}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Buscar por autor"
+          value={searchAuthor}
+          onChangeText={setSearchAuthor}
+        />
       </View>
 
-      <Modal visible={modalVisible} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <View></View>
-              <Text style={styles.modalTitle}>{book.title}</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Ionicons name="close" size={24} color="red" />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView>
-              <Text style={styles.modalLabel}>Autor(a): {book.author}</Text>
-
-              <View style={styles.row}>
-                <View style={styles.column}>
-                  <Text style={styles.modalLabel}>Status:</Text>
-                  <Text style={styles.readOnlyBox}>{book.status}</Text>
-                </View>
-                <View style={styles.column}>
-                  <Text style={styles.modalLabel}>Editora:</Text>
-                  <Text style={styles.readOnlyBox}>{book.publisher}</Text>
-                </View>
-              </View>
-
-              <View style={styles.row}>
-                <View style={styles.column}>
-                  <Text style={styles.modalLabel}>ISBN:</Text>
-                  <Text style={styles.readOnlyBox}>{book.isbn}</Text>
-                </View>
-                <View style={styles.column}>
-                  <Text style={styles.modalLabel}>Ano de publicação:</Text>
-                  <Text style={styles.readOnlyBox}>{book.year}</Text>
-                </View>
-              </View>
-
-              <Text style={styles.modalLabel}>Sinopse:</Text>
-              <Text style={styles.readOnlyBox}>{book.synopsis}</Text>
-            </ScrollView>
+      {/* Book List */}
+      <ScrollView>
+        {filteredBooks.map((book, index) => (
+          <View key={index} style={styles.bookItem}>
+            <TouchableOpacity onPress={() => openModal(book)}>
+              <Text style={styles.bookTitle}>{book.title}</Text>
+            </TouchableOpacity>
+            <Text style={styles.bookMeta}>Status: {book.status}</Text>
+            <Text style={styles.bookMeta}>Editora: {book.publisher}</Text>
+            <Text style={styles.bookMeta}>{book.author}</Text>
           </View>
-        </View>
-      </Modal>
+        ))}
+      </ScrollView>
+
+      {/* Book Modal */}
+      {selectedBook && (
+        <Modal visible={modalVisible} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <View></View>
+                <Text style={styles.modalTitle}>{selectedBook.title}</Text>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <Ionicons name="close" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView>
+                <Text style={styles.modalLabel}>Autor(a): {selectedBook.author}</Text>
+
+                <View style={styles.row}>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Status:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.status}</Text>
+                  </View>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Editora:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.publisher}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.row}>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>ISBN:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.isbn}</Text>
+                  </View>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Ano de publicação:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.year}</Text>
+                  </View>
+                </View>
+
+                <Text style={styles.modalLabel}>Sinopse:</Text>
+                <Text style={styles.readOnlyBox}>{selectedBook.synopsis}</Text>
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -79,11 +137,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#9AC0C5',
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
+  searchContainer: {
+    marginBottom: 10,
+  },
+  input: {
+    backgroundColor: '#e0e0e0',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 8,
   },
   bookItem: {
     backgroundColor: '#ddd',
     padding: 10,
-    marginTop: 5,
+    marginBottom: 8,
+    borderRadius: 6,
   },
   bookTitle: {
     color: '#0D4F97',
@@ -103,6 +173,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 15,
     padding: 20,
+    maxHeight: '90%',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -112,7 +183,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#0057A0',
-  
   },
   modalLabel: {
     fontWeight: '600',

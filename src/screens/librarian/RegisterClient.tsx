@@ -1,133 +1,162 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
+import {
+  View, StyleSheet, TextInput, Text, ScrollView, Alert
+} from 'react-native';
 import { Button } from 'react-native-paper';
+import { clientService } from '../../model/client/ClientService';
+import { Client } from '../../model/client/ClientEntity';
 
 const RegisterClient: React.FC = () => {
-    const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [address, setAddress] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [address, setAddress] = useState('');
 
-    const handleSave = () => {
-        Alert.alert('Sucesso', 'Cliente registrado com sucesso!');
+  const handleSave = () => {
+    if (!name || !phone || !email || !password || !address) {
+      Alert.alert('Erro', 'Preencha todos os campos!');
+      return;
+    }
 
-        setName('');
-        setPhone('');
-        setEmail('');
-        setPassword('');
-        setAddress('');
+    const newClient: Client = {
+      name,
+      phone,
+      email,
+      password,
+      address,
     };
 
-    return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.form}>
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Nome:</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Digite seu nome:"
-                        value={name}
-                        onChangeText={setName} 
-                    />
-                </View>
+    try {
+      clientService.create(newClient);
+      Alert.alert('Sucesso', 'Cliente registrado com sucesso!');
+      clearForm();
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível registrar o cliente.');
+    }
+  };
 
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Telefone:</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Digite seu telefone:"
-                        keyboardType="phone-pad"
-                        value={phone}
-                        onChangeText={setPhone} 
-                    />
-                </View>
+  const clearForm = () => {
+    setName('');
+    setPhone('');
+    setEmail('');
+    setPassword('');
+    setAddress('');
+  };
 
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Email:</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Digite seu email:"
-                        keyboardType="email-address"
-                        value={email}
-                        onChangeText={setEmail} 
-                    />
-                </View>
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.form}>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Nome:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite seu nome:"
+            value={name}
+            onChangeText={setName}
+          />
+        </View>
 
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Senha:</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Digite sua senha:"
-                        secureTextEntry
-                        value={password}
-                        onChangeText={setPassword} 
-                    />
-                </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Telefone:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite seu telefone:"
+            keyboardType="phone-pad"
+            value={phone}
+            onChangeText={setPhone}
+          />
+        </View>
 
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Endereço:</Text>
-                    <TextInput
-                        style={[styles.input, styles.multilineInput]}
-                        placeholder="Digite seu endereço:"
-                        multiline
-                        numberOfLines={4}
-                        value={address}
-                        onChangeText={setAddress} 
-                    />
-                </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Email:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite seu email:"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+        </View>
 
-                <View style={styles.buttonRow}>
-                    <Button mode="contained" onPress={handleSave} style={styles.button} buttonColor="#0D4F97">
-                        Salvar
-                    </Button>
-                </View>
-            </View>
-        </ScrollView>
-    );
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Senha:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite sua senha:"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Endereço:</Text>
+          <TextInput
+            style={[styles.input, styles.multilineInput]}
+            placeholder="Digite seu endereço:"
+            multiline
+            numberOfLines={4}
+            value={address}
+            onChangeText={setAddress}
+          />
+        </View>
+
+        <View style={styles.buttonRow}>
+          <Button
+            mode="contained"
+            onPress={handleSave}
+            style={styles.button}
+            buttonColor="#0D4F97"
+          >
+            Salvar
+          </Button>
+        </View>
+      </View>
+    </ScrollView>
+  );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flexGrow: 1,
-        backgroundColor: '#95BFC5',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingVertical: 20,
-    },
-    form: {
-        backgroundColor: '#d3d3d3',
-        padding: 20,
-        borderRadius: 8,
-        width: '90%',
-    },
-    inputGroup: {
-        marginBottom: 15,
-    },
-    label: {
-        color: '#000',
-        marginBottom: 5,
-    },
-    input: {
-        backgroundColor: '#fff',
-        borderRadius: 4,
-        paddingHorizontal: 10,
-        height: 40,
-    },
-    multilineInput: {
-        height: 80,
-        textAlignVertical: 'top',
-    },
-    buttonRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-    },
-    button: {
-        flex: 1,
-        marginHorizontal: 5,
-        color: '#0D4F97',
-    },
-});
-
 export default RegisterClient;
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#95BFC5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  form: {
+    backgroundColor: '#d3d3d3',
+    padding: 20,
+    borderRadius: 8,
+    width: '90%',
+  },
+  inputGroup: {
+    marginBottom: 15,
+  },
+  label: {
+    color: '#000',
+    marginBottom: 5,
+  },
+  input: {
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    paddingHorizontal: 10,
+    height: 40,
+  },
+  multilineInput: {
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  button: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+});

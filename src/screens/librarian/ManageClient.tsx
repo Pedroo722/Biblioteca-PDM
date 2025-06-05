@@ -1,46 +1,65 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Text, ScrollView, TouchableOpacity, Modal, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View, StyleSheet, TextInput, Text, ScrollView,
+  TouchableOpacity, Modal, FlatList, Alert
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Client } from '../../model/client/ClientEntity';
-
-const clientsMock = [
-  {
-      name: 'João Lima',
-      phone: '(83) 96666-6666',
-      email: 'lima.joao@gmail.com',
-      password: '123456',
-      address: 'Rua ali no canto 121',
-    },
-    {
-      name: 'Maria Silva',
-      phone: '(11) 95555-5555',
-      email: 'maria.silva@gmail.com',
-      password: 'abcdef',
-      address: 'Avenida das Flores, 123',
-    },
-    {
-      name: 'Carlos Souza',
-      phone: '(21) 97777-7777',
-      email: 'carlos.souza@gmail.com',
-      password: '7891011',
-      address: 'Rua das Palmeiras, 99',
-    },
-]
+import { clientService } from '../../model/client/ClientService';
 
 const ManageClient: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [selectedClient, setSelectedClient] = useState<(Client & { id: string }) | null>(null);
   const [searchEmail, setSearchEmail] = useState('');
+  const [clients, setClients] = useState<(Client & { id: string })[]>([]);
 
-  const [clients, setClients] = useState(clientsMock);
+  useEffect(() => {
+    loadClients();
+  }, []);
 
-  const filteredClients = clients.filter((client) =>
+  const loadClients = () => {
+    const allClients = clientService.findAll();
+    setClients(allClients);
+  };
+
+  const filteredClients = clients.filter(client =>
     client.email.toLowerCase().includes(searchEmail.toLowerCase())
   );
 
   const handleEdit = (field: keyof Client, value: string) => {
     if (selectedClient) {
       setSelectedClient({ ...selectedClient, [field]: value });
+    }
+  };
+
+  const handleSaveEdit = () => {
+    if (selectedClient) {
+      clientService.update(selectedClient.id, selectedClient);
+      loadClients();
+      setModalVisible(false);
+      Alert.alert('Sucesso', 'Cliente atualizado!');
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedClient) {
+      Alert.alert(
+        'Confirmar exclusão',
+        `Deseja excluir ${selectedClient.name}?`,
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Excluir',
+            style: 'destructive',
+            onPress: () => {
+              clientService.delete(selectedClient.id);
+              loadClients();
+              setModalVisible(false);
+              Alert.alert('Removido', 'Cliente excluído com sucesso.');
+            }
+          }
+        ]
+      );
     }
   };
 
@@ -55,7 +74,7 @@ const ManageClient: React.FC = () => {
 
       <FlatList
         data={filteredClients}
-        keyExtractor={(item) => item.email}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.clientItem}>
             <TouchableOpacity
@@ -65,9 +84,9 @@ const ManageClient: React.FC = () => {
               }}
             >
               <Text style={styles.clientName}>{item.name}</Text>
+              <Text style={styles.clientInfo}>Telefone: {item.phone}</Text>
+              <Text style={styles.clientInfo}>Email: {item.email}</Text>
             </TouchableOpacity>
-            <Text style={styles.clientInfo}>Telefone: {item.phone}</Text>
-            <Text style={styles.clientInfo}>Email: {item.email}</Text>
           </View>
         )}
       />
@@ -112,8 +131,12 @@ const ManageClient: React.FC = () => {
                 onChangeText={(text) => handleEdit('address', text)}
               />
 
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Editar</Text>
+              <TouchableOpacity style={styles.button} onPress={handleSaveEdit}>
+                <Text style={styles.buttonText}>Salvar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.button, { backgroundColor: '#c0392b' }]} onPress={handleDelete}>
+                <Text style={styles.buttonText}>Excluir</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>

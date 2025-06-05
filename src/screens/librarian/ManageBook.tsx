@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,37 +10,46 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../../model/book/BookEntity';
-
-const booksMock: Book[] = [
-  {
-    id: '1',
-    titulo: 'As crônicas de nárnia',
-    autor: 'C. S. Lewis',
-    status: 'Disponível',
-    editora: 'HarperCollins',
-    isbn: '857827069X',
-    ano: '2005',
-    sinopse: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-  },
-  {
-    id: '2',
-    titulo: 'Quarta asa',
-    autor: 'C. S. Lewis',
-    status: 'Disponível',
-    editora: 'HarperCollins',
-    isbn: '857827069X',
-    ano: '2005',
-    sinopse: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-  },
-];
+import { bookService } from '../../model/book/BookService';
 
 const ManageBook: React.FC = () => {
-  const [books, setBooks] = useState<Book[]>(booksMock);
+  const [books, setBooks] = useState<Book[]>([]);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
   const [searchTitle, setSearchTitle] = useState('');
   const [searchAuthor, setSearchAuthor] = useState('');
+
+  useEffect(() => {
+    // Mock inicial para popular o serviço
+    bookService.create({
+      id: '1',
+      titulo: 'As crônicas de nárnia',
+      autor: 'C. S. Lewis',
+      status: 'Disponível',
+      editora: 'HarperCollins',
+      isbn: '857827069X',
+      ano: '2005',
+      sinopse: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    });
+
+    bookService.create({
+      id: '2',
+      titulo: 'Quarta asa',
+      autor: 'C. S. Lewis',
+      status: 'Disponível',
+      editora: 'HarperCollins',
+      isbn: '857827069X',
+      ano: '2005',
+      sinopse: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    });
+
+    loadBooks();
+  }, []);
+
+  const loadBooks = () => {
+    setBooks(bookService.findAll());
+  };
 
   const handleFieldChange = (field: keyof Book, value: string) => {
     if (selectedBook) {
@@ -50,11 +59,8 @@ const ManageBook: React.FC = () => {
 
   const saveEdits = () => {
     if (selectedBook) {
-      setBooks((prevBooks) =>
-        prevBooks.map((book) =>
-          book.id === selectedBook.id ? selectedBook : book
-        )
-      );
+      bookService.update(selectedBook.id, selectedBook);
+      loadBooks();
       setIsEditing(false);
     }
   };
@@ -84,7 +90,6 @@ const ManageBook: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Campos de busca */}
       <TextInput
         style={styles.searchInput}
         placeholder="Buscar por título"

@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
 
 interface Loan {
   title: string;
@@ -26,6 +26,8 @@ const ManageLoan: React.FC = () => {
   const [clientModalVisible, setClientModalVisible] = useState(false);
   const [searchTitle, setSearchTitle] = useState('');
   const [searchEmail, setSearchEmail] = useState('');
+  const [showReturned, setShowReturned] = useState(false);
+  const [showLoaned, setShowLoaned] = useState(false);
 
   const bookDetails = {
     title: 'Quarta asa',
@@ -66,14 +68,20 @@ const ManageLoan: React.FC = () => {
     },
   ];
 
-  const filteredLoans = allLoans.filter((loan) =>
-    loan.title.toLowerCase().includes(searchTitle.toLowerCase()) &&
-    clientDetails.email.toLowerCase().includes(searchEmail.toLowerCase()) // simulação
-  );
+  const filteredLoans = allLoans.filter((loan) => {
+    const matchesTitle = loan.title.toLowerCase().includes(searchTitle.toLowerCase());
+    const matchesEmail = clientDetails.email.toLowerCase().includes(searchEmail.toLowerCase());
+
+    const matchesStatus =
+      (showReturned && loan.status === 'Devolvido') ||
+      (showLoaned && loan.status === 'Emprestado') ||
+      (!showReturned && !showLoaned); 
+
+    return matchesTitle && matchesEmail && matchesStatus;
+  });
 
   return (
     <View style={styles.container}>
-      {/* Search Inputs */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.input}
@@ -89,7 +97,17 @@ const ManageLoan: React.FC = () => {
         />
       </View>
 
-      {/* Loan Items */}
+      <View style={styles.checkboxContainer}>
+        <View style={styles.checkboxItem}>
+          <Text>Devolvido</Text>
+          <Switch value={showReturned} onValueChange={setShowReturned} />
+        </View>
+        <View style={styles.checkboxItem}>
+          <Text>Emprestado</Text>
+          <Switch value={showLoaned} onValueChange={setShowLoaned} />
+        </View>
+      </View>
+
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {filteredLoans.map((loan, index) => (
           <View key={index} style={styles.loanBox}>
@@ -110,7 +128,6 @@ const ManageLoan: React.FC = () => {
               <TouchableOpacity style={styles.buttonBlue}>
                 <Text style={styles.buttonText}>Finalizar</Text>
               </TouchableOpacity>
-
               <TouchableOpacity style={styles.buttonRed}>
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
@@ -119,8 +136,6 @@ const ManageLoan: React.FC = () => {
         ))}
       </ScrollView>
 
-      {/* Modals */}
-      {/* Book Modal */}
       <Modal visible={bookModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
@@ -149,7 +164,6 @@ const ManageLoan: React.FC = () => {
         </View>
       </Modal>
 
-      {/* Client Modal */}
       <Modal visible={clientModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
@@ -190,6 +204,16 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 10,
     marginBottom: 8,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginBottom: 10,
+  },
+  checkboxItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   loanBox: {
     backgroundColor: '#D9D9D9',

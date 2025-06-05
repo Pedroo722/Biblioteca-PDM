@@ -1,22 +1,10 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Text, ScrollView, TouchableOpacity, Modal, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Client } from '../../model/client/ClientEntity';
 
-interface Client {
-  name: string;
-  phone: string;
-  email: string;
-  password: string;
-  address: string;
-}
-
-const ManageClient: React.FC = () => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [searchEmail, setSearchEmail] = useState('');
-
-  const [clients, setClients] = useState<Client[]>([
-    {
+const clientsMock = [
+  {
       name: 'João Lima',
       phone: '(83) 96666-6666',
       email: 'lima.joao@gmail.com',
@@ -37,7 +25,14 @@ const ManageClient: React.FC = () => {
       password: '7891011',
       address: 'Rua das Palmeiras, 99',
     },
-  ]);
+]
+
+const ManageClient: React.FC = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [searchEmail, setSearchEmail] = useState('');
+
+  const [clients, setClients] = useState(clientsMock);
 
   const filteredClients = clients.filter((client) =>
     client.email.toLowerCase().includes(searchEmail.toLowerCase())

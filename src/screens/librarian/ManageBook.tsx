@@ -9,19 +9,9 @@ import {
   FlatList,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Book } from '../../model/book/BookEntity';
 
-type Livro = {
-  id: string;
-  titulo: string;
-  autor: string;
-  status: string;
-  editora: string;
-  isbn: string;
-  ano: string;
-  sinopse: string;
-};
-
-const livrosMock: Livro[] = [
+const booksMock: Book[] = [
   {
     id: '1',
     titulo: 'As crônicas de nárnia',
@@ -45,14 +35,14 @@ const livrosMock: Livro[] = [
 ];
 
 const ManageBook: React.FC = () => {
-  const [livros, setLivros] = useState<Livro[]>(livrosMock);
-  const [selectedBook, setSelectedBook] = useState<Livro | null>(null);
+  const [books, setBooks] = useState<Book[]>(booksMock);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
   const [searchTitle, setSearchTitle] = useState('');
   const [searchAuthor, setSearchAuthor] = useState('');
 
-  const handleFieldChange = (field: keyof Livro, value: string) => {
+  const handleFieldChange = (field: keyof Book, value: string) => {
     if (selectedBook) {
       setSelectedBook({ ...selectedBook, [field]: value });
     }
@@ -60,22 +50,22 @@ const ManageBook: React.FC = () => {
 
   const saveEdits = () => {
     if (selectedBook) {
-      setLivros((prevLivros) =>
-        prevLivros.map((livro) =>
-          livro.id === selectedBook.id ? selectedBook : livro
+      setBooks((prevBooks) =>
+        prevBooks.map((book) =>
+          book.id === selectedBook.id ? selectedBook : book
         )
       );
       setIsEditing(false);
     }
   };
 
-  const filteredBooks = livros.filter(
-    (livro) =>
-      livro.titulo.toLowerCase().includes(searchTitle.toLowerCase()) &&
-      livro.autor.toLowerCase().includes(searchAuthor.toLowerCase())
+  const filteredBooks = books.filter(
+    (book) =>
+      book.titulo.toLowerCase().includes(searchTitle.toLowerCase()) &&
+      book.autor.toLowerCase().includes(searchAuthor.toLowerCase())
   );
 
-  const renderItem = ({ item }: { item: Livro }) => (
+  const renderItem = ({ item }: { item: Book }) => (
     <TouchableOpacity
       style={styles.bookItem}
       onPress={() => {

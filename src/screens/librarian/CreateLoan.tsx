@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Text, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-
 const livrosMock = ['Nárnia', 'Quarta asa', 'O Hobbit'];
 const clientesMock = ['Maria@gmail.com', 'João@gmail.com', 'Ana@gmail.com'];
 

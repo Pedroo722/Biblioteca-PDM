@@ -1,25 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Modal,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  Switch,
-} from 'react-native';
+import { View, StyleSheet, Text, Modal, TouchableOpacity, TextInput, ScrollView, Switch } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-interface Loan {
-  title: string;
-  name: string;
-  email: string;
-  fine: string;
-  loanDate: string;
-  returnDate: string;
-  status: string;
-}
+import { Loan } from '../../model/loan/LoanEntity';
 
 const ManageLoan: React.FC = () => {
   const [bookModalVisible, setBookModalVisible] = useState(false);

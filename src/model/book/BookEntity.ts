@@ -1,8 +1,10 @@
 export type Book = {
   id: string;
-  title: string;
-  author: string;
-  fine: string;
-  loanDate: string;
-  returnDate: string;
+  titulo: string;
+  autor: string;
+  status: string;
+  editora: string;
+  isbn: string;
+  ano: string;
+  sinopse: string;
 };

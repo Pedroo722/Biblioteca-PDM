@@ -1,8 +1,17 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { Book } from '../../model/book/BookEntity';
+import { Ionicons } from '@expo/vector-icons';
+import { Loan } from '../../model/loan/LoanEntity';
 
 type DrawerParamList = {
   'Meus Livros': undefined;
@@ -14,47 +23,109 @@ type DrawerParamList = {
   'Cadastrar Cliente': undefined;
 };
 
-const books: Book[] = [
+const books: Loan[] = [
   {
-    id: '1',
+    email: 'ana@gmail.com',
+    name: 'Ana',
     title: 'As crônicas de nárnia',
-    author: 'C. S. Lewis',
     fine: '0.75',
     loanDate: '02/16/2025',
     returnDate: '05/16/2025',
+    status: 'Disponível',
   },
   {
-    id: '2',
+    email: 'joão@gmail.com',
+    name: 'João',
     title: 'Quarta asa',
-    author: 'C. l. ckidifmj',
     fine: '0',
     loanDate: '03/17/2025',
     returnDate: '05/20/2025',
+    status: 'Indisponível',
   },
 ];
 
 const AccountBook: React.FC = () => {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<Loan | null>(null);
 
-  const renderItem = ({ item }: { item: Book }) => (
-    <View style={styles.bookContainer}>
+  const openModal = (book: Loan) => {
+    setSelectedBook(book);
+    setModalVisible(true);
+  };
+
+  const renderItem = ({ item }: { item: Loan }) => (
+    <TouchableOpacity onPress={() => openModal(item)} style={styles.bookContainer}>
       <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.text}>Autor: {item.author}</Text>
       <Text style={styles.text}>Multa: {item.fine}</Text>
       <Text style={styles.text}>Data de Empréstimo: {item.loanDate}</Text>
       <Text style={styles.text}>Data de Retorno: {item.returnDate}</Text>
       <View style={styles.separator} />
-    </View>
+    </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
       <FlatList
         data={books}
-        keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
       />
+
+      {/* Modal de Detalhes do Livro */}
+      {selectedBook && (
+        <Modal visible={modalVisible} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <View />
+                <Text style={styles.modalTitle}>{selectedBook.title}</Text>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <Ionicons name="close" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView>
+                {/* Linha 1 - Nome e Email */}
+                <View style={styles.row}>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Nome:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.name}</Text>
+                  </View>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Email:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.email}</Text>
+                  </View>
+                </View>
+
+                {/* Linha 2 - Status e Multa */}
+                <View style={styles.row}>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Status:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.status}</Text>
+                  </View>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Multa:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.fine}</Text>
+                  </View>
+                </View>
+
+                {/* Linha 3 - Data de Empréstimo e Data de Retorno */}
+                <View style={styles.row}>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Data de Empréstimo:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.loanDate}</Text>
+                  </View>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Data de Retorno:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.returnDate}</Text>
+                  </View>
+                </View>
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -75,7 +146,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#d9d9d9',
   },
   title: {
-    color: 'black',
+    color: '#0D4F97',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -88,5 +159,44 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: '#95BFC5',
     marginTop: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#00000099',
+    padding: 20,
+  },
+  modalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 20,
+    maxHeight: '90%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#0D4F97',
+  },
+  modalLabel: {
+    fontWeight: '600',
+    marginTop: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
+  },
+  column: {
+    flex: 1,
+  },
+  readOnlyBox: {
+    backgroundColor: '#ffffff',
+    borderRadius: 6,
+    padding: 10,
+    minHeight: 40,
   },
 });

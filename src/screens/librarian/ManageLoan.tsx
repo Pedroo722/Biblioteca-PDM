@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text, Modal, TouchableOpacity, TextInput, ScrollView, Switch } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Text, Modal, TouchableOpacity, TextInput, ScrollView, Switch, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Loan } from '../../model/loan/LoanEntity';
+import { loanService } from '../../model/loan/LoanService';
 
 const ManageLoan: React.FC = () => {
+  const [loans, setLoans] = useState<(Loan & { id: string })[]>([]);
   const [bookModalVisible, setBookModalVisible] = useState(false);
   const [clientModalVisible, setClientModalVisible] = useState(false);
   const [searchTitle, setSearchTitle] = useState('');
@@ -11,53 +13,37 @@ const ManageLoan: React.FC = () => {
   const [showReturned, setShowReturned] = useState(false);
   const [showLoaned, setShowLoaned] = useState(false);
 
-  const bookDetails = {
-    title: 'Quarta asa',
-    author: 'C. S. Lewis',
-    status: 'Disponível',
-    publisher: 'HarperCollins',
-    isbn: '857827069X',
-    year: '2005',
-    synopsis: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
+
+  useEffect(() => {
+    const data = loanService.findAll();
+    setLoans(data);
+  }, []);
+
+  const handleFinalize = (id: string) => {
+    const updated = loanService.update(id, { status: 'Devolvido' });
+    if (updated) {
+      setLoans(loanService.findAll());
+      Alert.alert('Sucesso', 'Empréstimo finalizado com sucesso!');
+    }
   };
 
-  const clientDetails = {
-    name: 'João Lima',
-    phone: '(83) 96666-6666',
-    email: 'lima.joao@gmail.com',
-    password: '123456',
-    address: 'Rua ali no canto 121',
+  const handleCancel = (id: string) => {
+    const removed = loanService.delete(id);
+    if (removed) {
+      setLoans(loanService.findAll());
+      Alert.alert('Cancelado', 'Empréstimo removido com sucesso.');
+    }
   };
 
-  const allLoans: Loan[] = [
-    {
-      title: 'Quarta asa',
-      name: 'João Lima',
-      email: 'lime.joao@gmail.com',
-      fine: '0,75',
-      loanDate: '25/02/2005',
-      returnDate: '25/02/2005',
-      status: 'Emprestado',
-    },
-    {
-      title: 'As Crônicas de Nárnia',
-      name: 'Maria Souza',
-      email: 'costa.maria@gmail.com',
-      fine: '0,00',
-      loanDate: '10/01/2025',
-      returnDate: '15/02/2025',
-      status: 'Devolvido',
-    },
-  ];
-
-  const filteredLoans = allLoans.filter((loan) => {
+  const filteredLoans = loans.filter((loan) => {
     const matchesTitle = loan.title.toLowerCase().includes(searchTitle.toLowerCase());
-    const matchesEmail = clientDetails.email.toLowerCase().includes(searchEmail.toLowerCase());
+    const matchesEmail = loan.email.toLowerCase().includes(searchEmail.toLowerCase());
 
     const matchesStatus =
       (showReturned && loan.status === 'Devolvido') ||
       (showLoaned && loan.status === 'Emprestado') ||
-      (!showReturned && !showLoaned); 
+      (!showReturned && !showLoaned);
 
     return matchesTitle && matchesEmail && matchesStatus;
   });
@@ -91,13 +77,13 @@ const ManageLoan: React.FC = () => {
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-        {filteredLoans.map((loan, index) => (
-          <View key={index} style={styles.loanBox}>
-            <TouchableOpacity onPress={() => setBookModalVisible(true)}>
+        {filteredLoans.map((loan) => (
+          <View key={loan.id} style={styles.loanBox}>
+            <TouchableOpacity onPress={() => { setSelectedLoan(loan); setBookModalVisible(true); }}>
               <Text style={styles.clickableTitle}>{loan.title}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setClientModalVisible(true)}>
+            <TouchableOpacity onPress={() => { setSelectedLoan(loan); setClientModalVisible(true); }}>
               <Text style={styles.clickableTitle}>{loan.email}</Text>
             </TouchableOpacity>
 
@@ -107,41 +93,30 @@ const ManageLoan: React.FC = () => {
             <Text>Data de retorno: {loan.returnDate}</Text>
 
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.buttonBlue}>
+              <TouchableOpacity style={styles.buttonBlue} onPress={() => handleFinalize(loan.id)}>
                 <Text style={styles.buttonText}>Finalizar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonRed}>
+              <TouchableOpacity style={styles.buttonRed} onPress={() => handleCancel(loan.id)}>
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
             </View>
           </View>
         ))}
       </ScrollView>
-
       <Modal visible={bookModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, styles.centerText]}>
-                {bookDetails.title}
+                {selectedLoan?.title}
               </Text>
               <TouchableOpacity onPress={() => setBookModalVisible(false)}>
                 <Ionicons name="close" size={24} color="red" />
               </TouchableOpacity>
             </View>
-
-            <Text style={styles.centerText}>Autor(a): {bookDetails.author}</Text>
-            <View style={styles.row}>
-              <Text>Status: {bookDetails.status}</Text>
-              <Text>Editora: {bookDetails.publisher}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text>ISBN: {bookDetails.isbn}</Text>
-              <Text>Ano de publicação: {bookDetails.year}</Text>
-            </View>
-
-            <Text style={styles.synopsisLabel}>Sinopse:</Text>
-            <Text>{bookDetails.synopsis}</Text>
+            <Text style={styles.centerText}>Status: {selectedLoan?.status}</Text>
+            <Text>Data de empréstimo: {selectedLoan?.loanDate}</Text>
+            <Text>Data de retorno: {selectedLoan?.returnDate}</Text>
           </View>
         </View>
       </Modal>
@@ -151,17 +126,14 @@ const ManageLoan: React.FC = () => {
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, styles.centerText]}>
-                {clientDetails.name}
+                {selectedLoan?.name}
               </Text>
               <TouchableOpacity onPress={() => setClientModalVisible(false)}>
                 <Ionicons name="close" size={24} color="red" />
               </TouchableOpacity>
             </View>
-
-            <Text style={styles.centerText}>Telefone: {clientDetails.phone}</Text>
-            <Text style={styles.centerText}>Email: {clientDetails.email}</Text>
-            <Text style={styles.centerText}>Senha: {clientDetails.password}</Text>
-            <Text style={styles.centerText}>Endereço: {clientDetails.address}</Text>
+            <Text style={styles.centerText}>Email: {selectedLoan?.email}</Text>
+            <Text style={styles.centerText}>Multa: {selectedLoan?.fine}</Text>
           </View>
         </View>
       </Modal>

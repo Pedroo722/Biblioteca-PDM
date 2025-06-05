@@ -20,6 +20,34 @@ const ManageLoan: React.FC = () => {
     setLoans(data);
   }, []);
 
+  // Converte data no formato 'dd/mm/yyyy' para objeto Date ISO
+  const parseBRDate = (dateStr: string): Date | null => {
+    if (!dateStr) return null;
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return null;
+    const [day, month, year] = parts;
+    const isoString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    const dateObj = new Date(isoString);
+    return isNaN(dateObj.getTime()) ? null : dateObj;
+  };
+
+  const calculateFine = (returnDate: string): string => {
+    const returnDt = parseBRDate(returnDate);
+    if (!returnDt) return 'R$ 0,00';
+
+    const today = new Date();
+    // Zera horas, minutos, segundos e milissegundos para comparação só pela data
+    today.setHours(0, 0, 0, 0);
+
+    if (returnDt >= today) return 'R$ 0,00';
+
+    const diffTime = today.getTime() - returnDt.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const fineAmount = diffDays * 0.25;
+
+    return `R$ ${fineAmount.toFixed(2).replace('.', ',')}`;
+  };
+
   const handleFinalize = (id: string) => {
     const updated = loanService.update(id, { status: 'Devolvido' });
     if (updated) {
@@ -89,7 +117,7 @@ const ManageLoan: React.FC = () => {
 
             <View style={styles.infoRow}>
               <Text style={[styles.labelBold, styles.labelRed]}>Multa:</Text>
-              <Text>{loan.fine}</Text>
+              <Text>{calculateFine(loan.returnDate)}</Text>
             </View>
 
             <View style={styles.infoRow}>
@@ -118,6 +146,7 @@ const ManageLoan: React.FC = () => {
           </View>
         ))}
       </ScrollView>
+
       <Modal visible={bookModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContainer, styles.centeredContent]}>
@@ -167,7 +196,7 @@ const ManageLoan: React.FC = () => {
 
             <View style={styles.modalContentItem}>
               <Text style={styles.labelBold}>Multa:</Text>
-              <Text>{selectedLoan?.fine}</Text>
+              <Text>{selectedLoan ? calculateFine(selectedLoan.returnDate) : 'R$ 0,00'}</Text>
             </View>
           </View>
         </View>
@@ -276,22 +305,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   labelBold: {
-  fontWeight: 'bold',
-  fontSize: 14,
-  textAlign: 'center',
-},
-
-centeredContent: {
-  alignItems: 'center',
-},
-
-modalContentItem: {
-  marginVertical: 5,
-  alignItems: 'center',
-},
-infoRow: {
-  flexDirection: 'row',
-  alignItems: 'center',
-},
-
+    fontWeight: 'bold',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  centeredContent: {
+    alignItems: 'center',
+  },
+  modalContentItem: {
+    marginVertical: 5,
+    alignItems: 'center',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 });

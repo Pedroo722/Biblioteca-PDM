@@ -18,7 +18,6 @@ const Drawer = createDrawerNavigator();
 const CustomDrawerContent = (props: any) => {
   return (
     <DrawerContentScrollView {...props}>
-      {/* Seção Cliente */}
       <Text style={styles.sectionTitle}>Cliente</Text>
       <DrawerItem
         label="Meus Livros"
@@ -33,7 +32,6 @@ const CustomDrawerContent = (props: any) => {
 
       <View style={styles.divider} />
 
-      {/* Seção Funcionário */}
       <Text style={styles.sectionTitle}>Funcionário</Text>
       <DrawerItem
         label="Gerenciar Clientes"

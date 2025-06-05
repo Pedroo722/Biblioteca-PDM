@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-  TextInput,
-} from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Modal, ScrollView, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const LibraryBook: React.FC = () => {
@@ -52,7 +44,6 @@ const LibraryBook: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Search inputs */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.input}
@@ -68,7 +59,6 @@ const LibraryBook: React.FC = () => {
         />
       </View>
 
-      {/* Book List */}
       <ScrollView>
         {filteredBooks.map((book, index) => (
           <View key={index} style={styles.bookItem}>
@@ -82,7 +72,6 @@ const LibraryBook: React.FC = () => {
         ))}
       </ScrollView>
 
-      {/* Book Modal */}
       {selectedBook && (
         <Modal visible={modalVisible} transparent animationType="fade">
           <View style={styles.modalOverlay}>

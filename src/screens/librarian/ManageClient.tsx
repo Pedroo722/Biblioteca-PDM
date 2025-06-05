@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View, StyleSheet, TextInput, Text, ScrollView,
-  TouchableOpacity, Modal, FlatList, Alert
-} from 'react-native';
+import { View, StyleSheet, TextInput, Text, ScrollView, TouchableOpacity, Modal, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Client } from '../../model/client/ClientEntity';
 import { clientService } from '../../model/client/ClientService';

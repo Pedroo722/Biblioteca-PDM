@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Text,
-  TouchableOpacity,
-  Modal,
-  FlatList,
-} from 'react-native';
+import { View, StyleSheet, TextInput, Text, TouchableOpacity, Modal, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../../model/book/BookEntity';
 import { bookService } from '../../model/book/BookService';
@@ -21,7 +13,6 @@ const ManageBook: React.FC = () => {
   const [searchAuthor, setSearchAuthor] = useState('');
 
   useEffect(() => {
-    // Mock inicial para popular o serviço
     bookService.create({
       id: '1',
       titulo: 'As crônicas de nárnia',

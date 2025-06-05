@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View, StyleSheet, TextInput, Text, ScrollView, Alert
-} from 'react-native';
+import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import { clientService } from '../../model/client/ClientService';
 import { Client } from '../../model/client/ClientEntity';

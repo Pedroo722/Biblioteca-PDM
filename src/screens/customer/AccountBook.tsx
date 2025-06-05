@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
@@ -72,7 +64,6 @@ const AccountBook: React.FC = () => {
         contentContainerStyle={styles.list}
       />
 
-      {/* Modal de Detalhes do Livro */}
       {selectedBook && (
         <Modal visible={modalVisible} transparent animationType="fade">
           <View style={styles.modalOverlay}>
@@ -86,7 +77,6 @@ const AccountBook: React.FC = () => {
               </View>
 
               <ScrollView>
-                {/* Linha 1 - Nome e Email */}
                 <View style={styles.row}>
                   <View style={styles.column}>
                     <Text style={styles.modalLabel}>Nome:</Text>
@@ -98,7 +88,6 @@ const AccountBook: React.FC = () => {
                   </View>
                 </View>
 
-                {/* Linha 2 - Status e Multa */}
                 <View style={styles.row}>
                   <View style={styles.column}>
                     <Text style={styles.modalLabel}>Status:</Text>
@@ -109,8 +98,7 @@ const AccountBook: React.FC = () => {
                     <Text style={styles.readOnlyBox}>{selectedBook.fine}</Text>
                   </View>
                 </View>
-
-                {/* Linha 3 - Data de Empréstimo e Data de Retorno */}
+                
                 <View style={styles.row}>
                   <View style={styles.column}>
                     <Text style={styles.modalLabel}>Data de Empréstimo:</Text>

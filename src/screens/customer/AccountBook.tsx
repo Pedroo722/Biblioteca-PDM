@@ -54,7 +54,7 @@ const AccountBook: React.FC = () => {
     <TouchableOpacity onPress={() => openModal(item)} style={styles.bookContainer}>
       <Text style={styles.title}>{item.title}</Text>
       <View style={styles.infoRow}>
-        <Text style={styles.label}>Multa:</Text>
+        <Text style={styles.labelRed}>Multa:</Text>
         <Text style={styles.text}>{item.fine}</Text>
       </View>
       <View style={styles.infoRow}>
@@ -209,13 +209,17 @@ const styles = StyleSheet.create({
     minHeight: 40,
   },
   infoRow: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginTop: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
   },
   label: {
-  fontWeight: 'bold',
-  fontSize: 14,
-  marginRight: 4,
-},
+    fontWeight: 'bold',
+    fontSize: 14,
+    marginRight: 4,
+  },
+  labelRed: {
+    color: 'red',
+    fontWeight: 'bold',
+  },
 });

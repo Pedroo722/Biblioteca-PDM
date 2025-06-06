@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity, Modal, FlatList } from 'react-native';
+import { View, StyleSheet, TextInput, Text, TouchableOpacity, Modal, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../../model/book/BookEntity';
-import { bookService } from '../../model/book/BookService';
+import { bookService } from '../../model/book/BookService'; // já importado
 import { Picker } from '@react-native-picker/picker';
 
 const ManageBook: React.FC = () => {
@@ -14,6 +14,7 @@ const ManageBook: React.FC = () => {
   const [searchAuthor, setSearchAuthor] = useState('');
 
   useEffect(() => {
+    // Simulando a criação de livros (você já está usando o bookService para isso)
     bookService.create({
       titulo: 'As crônicas de nárnia',
       autor: 'C. S. Lewis',
@@ -55,6 +56,28 @@ const ManageBook: React.FC = () => {
     }
   };
 
+  // Função de exclusão
+  const deleteBook = () => {
+    if (selectedBook) {
+      Alert.alert(
+        'Confirmar Exclusão',
+        `Tem certeza de que deseja excluir o livro "${selectedBook.titulo}"?`,
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Apagar',
+            style: 'destructive',
+            onPress: () => {
+              bookService.delete(selectedBook.id);
+              loadBooks();
+              setSelectedBook(null); // Fecha o modal após excluir
+            },
+          },
+        ]
+      );
+    }
+  };
+
   const filteredBooks = books.filter(
     (book) =>
       book.titulo.toLowerCase().includes(searchTitle.toLowerCase()) &&
@@ -70,20 +93,18 @@ const ManageBook: React.FC = () => {
       }}
     >
       <Text style={styles.title}>{item.titulo}</Text>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Autor:</Text>
-          <Text>{item.autor}</Text>
-        </View>
-        <View style={styles.infoRow}>
-           <Text style={styles.label}>Status:</Text>
-          <Text>{item.status}</Text>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Editora:</Text>
-          <Text>{item.editora}</Text>
-        </View>
-      
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Autor:</Text>
+        <Text>{item.autor}</Text>
+      </View>
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Status:</Text>
+        <Text>{item.status}</Text>
+      </View>
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Editora:</Text>
+        <Text>{item.editora}</Text>
+      </View>
     </TouchableOpacity>
   );
 
@@ -132,16 +153,16 @@ const ManageBook: React.FC = () => {
                 />
 
                 <Text style={styles.modalLabel}>Status:</Text>
-                  <View style={styles.pickerWrapper}>
-                    <Picker
-                      selectedValue={selectedBook.status}
-                      enabled={isEditing}
-                      onValueChange={(itemValue) => handleFieldChange('status', itemValue)}
-                    >
-                      <Picker.Item label="Disponível" value="Disponível" />
-                      <Picker.Item label="Emprestado" value="Emprestado" />
-                    </Picker>
-                  </View>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={selectedBook.status}
+                    enabled={isEditing}
+                    onValueChange={(itemValue) => handleFieldChange('status', itemValue)}
+                  >
+                    <Picker.Item label="Disponível" value="Disponível" />
+                    <Picker.Item label="Emprestado" value="Emprestado" />
+                  </Picker>
+                </View>
 
                 <Text style={styles.modalLabel}>Editora:</Text>
                 <TextInput
@@ -184,6 +205,14 @@ const ManageBook: React.FC = () => {
                   <Text style={styles.editButtonText}>
                     {isEditing ? 'Salvar' : 'Editar'}
                   </Text>
+                </TouchableOpacity>
+
+                {/* Botão de Apagar */}
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={deleteBook}
+                >
+                  <Text style={styles.deleteButtonText}>Apagar</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -259,14 +288,32 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlignVertical: 'top',
   },
+  pickerWrapper: {
+    backgroundColor: '#e0e0e0',
+    borderRadius: 6,
+    marginTop: 4,
+    height: 35,
+    justifyContent: 'center',
+  },
   editButton: {
-    backgroundColor: '#004080',
-    padding: 10,
-    borderRadius: 10,
+    backgroundColor: '#0D4F97',
+    padding: 12,
     marginTop: 15,
+    borderRadius: 6,
     alignItems: 'center',
   },
   editButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    padding: 12,
+    marginTop: 15,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  deleteButtonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
@@ -278,12 +325,5 @@ label: {
   fontWeight: 'bold',
   marginRight: 4,
   fontSize: 14,
-},
-pickerWrapper: {
-  backgroundColor: '#e0e0e0',
-  borderRadius: 6,
-  marginTop: 4,
-  height: 35,
-  justifyContent: 'center',
 },
 });

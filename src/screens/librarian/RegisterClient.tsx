@@ -82,7 +82,6 @@ const RegisterClient: React.FC = () => {
           <TextInput
             style={styles.input}
             placeholder="Digite sua senha:"
-            secureTextEntry
             value={password}
             onChangeText={setPassword}
           />

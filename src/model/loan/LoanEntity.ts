@@ -5,5 +5,6 @@ export type Loan = {
   fine: string;
   loanDate: string;
   returnDate: string;
+  returnDateReal: string;
   status: string;
 };

@@ -20,7 +20,6 @@ const ManageLoan: React.FC = () => {
     setLoans(data);
   }, []);
 
-  // Converte data no formato 'dd/mm/yyyy' para objeto Date ISO
   const parseBRDate = (dateStr: string): Date | null => {
     if (!dateStr) return null;
     const parts = dateStr.split('/');
@@ -32,30 +31,42 @@ const ManageLoan: React.FC = () => {
   };
 
   const calculateFine = (returnDate: string): string => {
-    const returnDt = parseBRDate(returnDate);
-    if (!returnDt) return 'R$ 0,00';
+  const returnDt = parseBRDate(returnDate);
+  if (!returnDt) return 'R$ 0,00';
 
-    const today = new Date();
-    // Zera horas, minutos, segundos e milissegundos para comparação só pela data
-    today.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  returnDt.setHours(0, 0, 0, 0);
 
-    if (returnDt >= today) return 'R$ 0,00';
+  if (today <= returnDt) return 'R$ 0,00';
 
-    const diffTime = today.getTime() - returnDt.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    const fineAmount = diffDays * 0.25;
+  const adjustedReturnDate = new Date(returnDt);
+  adjustedReturnDate.setDate(adjustedReturnDate.getDate() + 1);
 
-    return `R$ ${fineAmount.toFixed(2).replace('.', ',')}`;
+  const diffTime = today.getTime() - adjustedReturnDate.getTime();
+  const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+
+  const fineAmount = diffDays * 0.25;
+
+  return `R$ ${fineAmount.toFixed(2).replace('.', ',')}`;
   };
 
   const handleFinalize = (id: string) => {
-    const updated = loanService.update(id, { status: 'Devolvido' });
-    if (updated) {
-      setLoans(loanService.findAll());
-      Alert.alert('Sucesso', 'Empréstimo finalizado com sucesso!');
-    }
-  };
+  const today = new Date();
+  const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${
+    (today.getMonth() + 1).toString().padStart(2, '0')
+  }/${today.getFullYear()}`;
 
+  const updated = loanService.update(id, {
+    status: 'Devolvido',
+    returnDateReal: formattedDate,
+  });
+
+  if (updated) {
+    setLoans(loanService.findAll());
+    Alert.alert('Sucesso', 'Empréstimo finalizado com sucesso!');
+  }
+};
   const handleCancel = (id: string) => {
     const removed = loanService.delete(id);
     if (removed) {
@@ -135,9 +146,20 @@ const ManageLoan: React.FC = () => {
               <Text>{loan.returnDate}</Text>
             </View>
 
+            <View style={styles.infoRow}>
+              <Text style={styles.labelBold}>Data de retorno real:</Text>
+              <Text>{loan.returnDateReal}</Text>
+            </View>
+
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.buttonBlue} onPress={() => handleFinalize(loan.id)}>
-                <Text style={styles.buttonText}>Finalizar</Text>
+              <TouchableOpacity
+                style={[styles.buttonBlue, loan.status === 'Devolvido' && { backgroundColor: '#888' }]}
+                onPress={() => handleFinalize(loan.id)}
+                disabled={loan.status === 'Devolvido'}
+              >
+                <Text style={styles.buttonText}>
+                  {loan.status === 'Devolvido' ? 'Finalizado' : 'Finalizar'}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonRed} onPress={() => handleCancel(loan.id)}>
                 <Text style={styles.buttonText}>Cancelar</Text>

@@ -33,6 +33,7 @@ const CreateLoan: React.FC = () => {
       loanDate: today,
       returnDate,
       fine: 'R$ 0,00',
+      returnDateReal: '',
       status: 'Emprestado',
     };
 

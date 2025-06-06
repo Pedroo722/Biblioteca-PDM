@@ -23,6 +23,30 @@ const CreateLoan: React.FC = () => {
     return;
   }
 
+const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+const match = returnDate.match(dateRegex);
+if (!match) {
+  Alert.alert('Erro', 'Data de devolução inválida. Use o formato dd/mm/aaaa.');
+  return;
+}
+
+  const [_, day, month, year] = match;
+  const dayNum = parseInt(day);
+  const monthNum = parseInt(month);
+  const yearNum = parseInt(year);
+
+  const dateObj = new Date(yearNum, monthNum - 1, dayNum);
+
+  const isValidDate =
+  dateObj.getFullYear() === yearNum &&
+  dateObj.getMonth() === monthNum - 1 &&
+  dateObj.getDate() === dayNum;
+
+  if (!isValidDate) {
+  Alert.alert('Erro', 'Data de devolução inválida. Verifique se a data existe.');
+  return;
+  }
+
   const client = clientesMock.find((c) => c.email === selectedClient);
   const name = client ? client.name : 'Cliente desconhecido';
   const today = new Date().toLocaleDateString('pt-BR');
@@ -76,7 +100,7 @@ const CreateLoan: React.FC = () => {
           </Picker>
         </View>
 
-        <Text style={styles.label}>Data de devolução:</Text>
+        <Text style={styles.label}>Data Esperada de Retorno:</Text>
         <TextInput
           style={styles.input}
           placeholder="dd/mm/aaaa"

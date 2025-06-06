@@ -3,7 +3,7 @@ import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-nati
 import { Button } from 'react-native-paper';
 import { bookService } from '../../model/book/BookService';
 import { Book } from '../../model/book/BookEntity';
-import { v4 as uuidv4 } from 'uuid';
+import uuid from 'react-native-uuid';
 
 
 const RegisterBook: React.FC = () => {
@@ -21,7 +21,7 @@ const RegisterBook: React.FC = () => {
     }
 
     const newBook: Book = {
-      id: uuidv4(),
+      id: uuid.v4().toString(),
       titulo: title,
       autor: author,
       editora: publisher,

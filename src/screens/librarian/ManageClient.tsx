@@ -16,6 +16,9 @@ const ManageClient: React.FC = () => {
 
   const loadClients = () => {
     const allClients = clientService.findAll();
+    
+    allClients.sort((a, b) => a.name.localeCompare(b.name));
+    
     setClients(allClients);
   };
 

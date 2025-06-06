@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput, Text, TouchableOpacity, Modal, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../../model/book/BookEntity';
-import { bookService } from '../../model/book/BookService'; // já importado
+import { bookService } from '../../model/book/BookService';
 import { Picker } from '@react-native-picker/picker';
 
 const ManageBook: React.FC = () => {
@@ -14,32 +14,14 @@ const ManageBook: React.FC = () => {
   const [searchAuthor, setSearchAuthor] = useState('');
 
   useEffect(() => {
-    // Simulando a criação de livros (você já está usando o bookService para isso)
-    bookService.create({
-      titulo: 'As crônicas de nárnia',
-      autor: 'C. S. Lewis',
-      status: 'Disponível',
-      editora: 'HarperCollins',
-      isbn: '857827069X',
-      ano: '2005',
-      sinopse: '---',
-    });
-
-    bookService.create({
-      titulo: 'Quarta asa',
-      autor: 'C. S. Lewis',
-      status: 'Disponível',
-      editora: 'HarperCollins',
-      isbn: '857827069X',
-      ano: '2005',
-      sinopse: '---',
-    });
-
     loadBooks();
   }, []);
 
   const loadBooks = () => {
-    setBooks(bookService.findAll());
+    const sortedBooks = bookService.findAll().sort((a, b) => {
+      return a.titulo.localeCompare(b.titulo); 
+    });
+    setBooks(sortedBooks);
   };
 
   const handleFieldChange = (field: keyof Book, value: string) => {
@@ -56,7 +38,6 @@ const ManageBook: React.FC = () => {
     }
   };
 
-  // Função de exclusão
   const deleteBook = () => {
     if (selectedBook) {
       Alert.alert(
@@ -70,7 +51,7 @@ const ManageBook: React.FC = () => {
             onPress: () => {
               bookService.delete(selectedBook.id);
               loadBooks();
-              setSelectedBook(null); // Fecha o modal após excluir
+              setSelectedBook(null); 
             },
           },
         ]
@@ -207,7 +188,6 @@ const ManageBook: React.FC = () => {
                   </Text>
                 </TouchableOpacity>
 
-                {/* Botão de Apagar */}
                 <TouchableOpacity
                   style={styles.deleteButton}
                   onPress={deleteBook}

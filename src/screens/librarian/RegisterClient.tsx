@@ -17,7 +17,7 @@ const RegisterClient: React.FC = () => {
       return;
     }
 
-    const newClient: Client = {
+    const newClient = {
       name,
       phone,
       email,

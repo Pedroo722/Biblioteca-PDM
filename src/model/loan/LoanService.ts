@@ -1,37 +1,34 @@
 import { Loan } from './LoanEntity';
 
 export class LoanService {
-  private loans: (Loan & { id: string })[] = [];
+  private loans: Loan[] = [];
+  private nextId = 1;
 
-  create(loan: Loan): Loan & { id: string } {
-    const newLoan = { ...loan, id: Date.now().toString() };
+  create(loan: Omit<Loan, 'id'>): Loan {
+    const newLoan = { ...loan, id: this.nextId++ };
     this.loans.push(newLoan);
     return newLoan;
   }
 
-  findAll(): (Loan & { id: string })[] {
+  findAll(): Loan[] {
     return this.loans;
   }
 
-  findById(id: string): (Loan & { id: string }) | undefined {
+  findById(id: number): Loan | undefined {
     return this.loans.find(loan => loan.id === id);
   }
 
-  update(id: string, updatedLoan: Partial<Loan>): (Loan & { id: string }) | null {
+  update(id: number, updatedLoan: Partial<Loan>): Loan | null {
     const index = this.loans.findIndex(loan => loan.id === id);
-    if (index === -1) {
-      return null;
-    }
+    if (index === -1) return null;
 
     this.loans[index] = { ...this.loans[index], ...updatedLoan };
     return this.loans[index];
   }
 
-  delete(id: string): boolean {
+  delete(id: number): boolean {
     const index = this.loans.findIndex(loan => loan.id === id);
-    if (index === -1) {
-      return false;
-    }
+    if (index === -1) return false;
 
     this.loans.splice(index, 1);
     return true;

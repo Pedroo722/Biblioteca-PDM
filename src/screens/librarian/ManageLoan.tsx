@@ -5,7 +5,7 @@ import { Loan } from '../../model/loan/LoanEntity';
 import { loanService } from '../../model/loan/LoanService';
 
 const ManageLoan: React.FC = () => {
-  const [loans, setLoans] = useState<(Loan & { id: string })[]>([]);
+  const [loans, setLoans] = useState<Loan[]>([]);
   const [bookModalVisible, setBookModalVisible] = useState(false);
   const [clientModalVisible, setClientModalVisible] = useState(false);
   const [searchTitle, setSearchTitle] = useState('');
@@ -51,7 +51,7 @@ const ManageLoan: React.FC = () => {
   return `R$ ${fineAmount.toFixed(2).replace('.', ',')}`;
   };
 
-  const handleFinalize = (id: string) => {
+  const handleFinalize = (id: number) => {
   const today = new Date();
   const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${
     (today.getMonth() + 1).toString().padStart(2, '0')
@@ -67,7 +67,7 @@ const ManageLoan: React.FC = () => {
     Alert.alert('Sucesso', 'Empréstimo finalizado com sucesso!');
   }
 };
-  const handleCancel = (id: string) => {
+  const handleCancel = (id: number) => {
     const removed = loanService.delete(id);
     if (removed) {
       setLoans(loanService.findAll());

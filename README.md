@@ -18,6 +18,52 @@ Membros:
 
 </div>
 
+# Estrutura do Projeto
+
+```
+Directory structure:
+└── src/
+      ├── database/
+      │   ├── DataBaseManager.ts
+      │   ├── library_db.sql
+      │   └── repository/
+      │       ├── BookRepository.ts
+      │       ├── ClientRepository.ts
+      │       ├── EmployeeRepository.ts
+      │       └── LoanRepository.ts
+      ├── libs/
+      │   └── AuthLib.ts
+      ├── model/
+      │   ├── auth/
+      │   │   ├── AuthService.ts
+      │   │   ├── UserEntity.ts
+      │   │   └── UserService.ts
+      │   ├── book/
+      │   │   ├── BookEntity.ts
+      │   │   └── BookService.ts
+      │   ├── client/
+      │   │   ├── ClientEntity.ts
+      │   │   └── ClientService.ts
+      │   ├── employee/
+      │   │   ├── EmployeeEntity.ts
+      │   │   └── EmployeeService.ts
+      │   └── loan/
+      │       ├── LoanEntity.ts
+      │       └── LoanService.ts
+      └── screens/
+         ├── LoginScreen.tsx
+         ├── customer/
+         │   ├── AccountBook.tsx
+         │   └── LibraryBook.tsx
+         └── librarian/
+               ├── CreateLoan.tsx
+               ├── ManageBook.tsx
+               ├── ManageClient.tsx
+               ├── ManageLoan.tsx
+               ├── RegisterBook.tsx
+               └── RegisterClient.tsx
+```
+
 # Como Executar
 ### Pré-requisitos
 

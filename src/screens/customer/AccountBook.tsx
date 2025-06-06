@@ -17,6 +17,7 @@ type DrawerParamList = {
 
 const books: Loan[] = [
   {
+    id: 1,
     email: 'ana@gmail.com',
     name: 'Ana',
     title: 'As crônicas de nárnia',
@@ -27,6 +28,7 @@ const books: Loan[] = [
     status: 'Disponível',
   },
   {
+    id: 2,
     email: 'joão@gmail.com',
     name: 'João',
     title: 'Quarta asa',

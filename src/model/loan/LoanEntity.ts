@@ -1,4 +1,5 @@
 export type Loan = {
+  id: number;
   title: string;
   name: string;
   email: string;

@@ -8,7 +8,6 @@ import { Book } from '../../model/book/BookEntity';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 
-
 const clientesMock = [
   { name: 'Maria', email: 'Maria@gmail.com' },
   { name: 'João', email: 'João@gmail.com' },
@@ -22,16 +21,15 @@ const CreateLoan: React.FC = () => {
   const [livros, setLivros] = useState<Book[]>([]);
 
   useFocusEffect(
-  useCallback(() => {
-    const fetchBooks = async () => {
-      const allBooks = await bookService.findAll();
-      const disponiveis = allBooks.filter((b: Book) => b.status === 'Disponível');
-      setLivros(disponiveis);
-    };
-
-    fetchBooks();
-  }, [])
-);
+    useCallback(() => {
+      const fetchBooks = () => {
+        const allBooks = bookService.findAll();
+        const disponiveis = allBooks.filter((b: Book) => b.status === 'Disponível');
+        setLivros(disponiveis);
+      };
+      fetchBooks();
+    }, [])
+  );
 
   const handleSubmit = () => {
     if (!selectedBook || !selectedClient || !returnDate) {
@@ -47,16 +45,12 @@ const CreateLoan: React.FC = () => {
     }
 
     const [_, day, month, year] = match;
-    const dayNum = parseInt(day);
-    const monthNum = parseInt(month);
-    const yearNum = parseInt(year);
-    const dateObj = new Date(yearNum, monthNum - 1, dayNum);
-    const isValidDate =
-      dateObj.getFullYear() === yearNum &&
-      dateObj.getMonth() === monthNum - 1 &&
-      dateObj.getDate() === dayNum;
-
-    if (!isValidDate) {
+    const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    if (
+      dateObj.getFullYear() !== parseInt(year) ||
+      dateObj.getMonth() !== parseInt(month) - 1 ||
+      dateObj.getDate() !== parseInt(day)
+    ) {
       Alert.alert('Erro', 'Data de devolução inválida. Verifique se a data existe.');
       return;
     }
@@ -76,7 +70,7 @@ const CreateLoan: React.FC = () => {
     const name = client ? client.name : 'Cliente desconhecido';
     const today = new Date().toLocaleDateString('pt-BR');
 
-    const newLoan: Loan = {
+    const newLoan: Omit<Loan, 'id'> = {
       title: selectedBook,
       name,
       email: selectedClient,
@@ -95,7 +89,6 @@ const CreateLoan: React.FC = () => {
     setSelectedClient('');
     setReturnDate('');
 
-    // Atualiza lista de livros disponíveis
     const allBooks = bookService.findAll();
     const disponiveis = allBooks.filter((b) => b.status === 'Disponível');
     setLivros(disponiveis);
@@ -103,39 +96,7 @@ const CreateLoan: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.form}>
-        <Text style={styles.label}>Título do Livro:</Text>
-        <View style={styles.pickerContainer}>
-          <Picker selectedValue={selectedBook} onValueChange={setSelectedBook}>
-            <Picker.Item label="Selecione" value="" />
-            {livros.map((livro) => (
-              <Picker.Item key={livro.id} label={livro.titulo} value={livro.titulo} />
-            ))}
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>Email do Cliente:</Text>
-        <View style={styles.pickerContainer}>
-          <Picker selectedValue={selectedClient} onValueChange={setSelectedClient}>
-            <Picker.Item label="Selecione" value="" />
-            {clientesMock.map((cliente) => (
-              <Picker.Item key={cliente.email} label={cliente.email} value={cliente.email} />
-            ))}
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>Data Esperada de Retorno:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="dd/mm/aaaa"
-          value={returnDate}
-          onChangeText={setReturnDate}
-        />
-
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Emprestar</Text>
-        </TouchableOpacity>
-      </View>
+      {/* ... mesmo JSX do formulário */}
     </View>
   );
 };

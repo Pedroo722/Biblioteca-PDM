@@ -15,25 +15,23 @@ const ManageBook: React.FC = () => {
 
   useEffect(() => {
     bookService.create({
-      id: '1',
       titulo: 'As crônicas de nárnia',
       autor: 'C. S. Lewis',
       status: 'Disponível',
       editora: 'HarperCollins',
       isbn: '857827069X',
       ano: '2005',
-      sinopse: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+      sinopse: '---',
     });
 
     bookService.create({
-      id: '2',
       titulo: 'Quarta asa',
       autor: 'C. S. Lewis',
       status: 'Disponível',
       editora: 'HarperCollins',
       isbn: '857827069X',
       ano: '2005',
-      sinopse: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+      sinopse: '---',
     });
 
     loadBooks();
@@ -106,7 +104,7 @@ const ManageBook: React.FC = () => {
 
       <FlatList
         data={filteredBooks}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: 30 }}
       />

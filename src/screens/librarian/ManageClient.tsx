@@ -6,9 +6,9 @@ import { clientService } from '../../model/client/ClientService';
 
 const ManageClient: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<(Client & { id: string }) | null>(null);
+  const [selectedClient, setSelectedClient] = useState<(Client & { id: number }) | null>(null);
   const [searchEmail, setSearchEmail] = useState('');
-  const [clients, setClients] = useState<(Client & { id: string })[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
 
   useEffect(() => {
     loadClients();
@@ -71,7 +71,7 @@ const ManageClient: React.FC = () => {
 
       <FlatList
         data={filteredClients}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.clientItem}>
             <TouchableOpacity

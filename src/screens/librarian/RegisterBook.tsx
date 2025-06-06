@@ -20,8 +20,7 @@ const RegisterBook: React.FC = () => {
       return;
     }
 
-    const newBook: Book = {
-      id: uuid.v4().toString(),
+    const newBook = {
       titulo: title,
       autor: author,
       editora: publisher,

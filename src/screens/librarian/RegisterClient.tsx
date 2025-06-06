@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
   label: {
     color: '#000',
     marginBottom: 5,
+    fontWeight: 'bold',  // <== aqui!
   },
   input: {
     backgroundColor: '#fff',

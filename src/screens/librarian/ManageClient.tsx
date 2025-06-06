@@ -116,7 +116,6 @@ const ManageClient: React.FC = () => {
               <Text style={styles.label}>Senha:</Text>
               <TextInput
                 style={styles.input}
-                secureTextEntry
                 value={selectedClient?.password}
                 onChangeText={(text) => handleEdit('password', text)}
               />

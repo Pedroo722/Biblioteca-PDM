@@ -127,45 +127,46 @@ const RegisterBook: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flexGrow: 1,
-        backgroundColor: '#95BFC5',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingVertical: 20,
-    },
-    form: {
-        backgroundColor: '#d3d3d3',
-        padding: 20,
-        borderRadius: 8,
-        width: '90%',
-    },
-    inputGroup: {
-        marginBottom: 15,
-    },
-    label: {
-        color: '#000',
-        marginBottom: 5,
-    },
-    input: {
-        backgroundColor: '#fff',
-        borderRadius: 4,
-        paddingHorizontal: 10,
-        height: 40,
-    },
-    multilineInput: {
-        height: 80,
-        textAlignVertical: 'top',
-    },
-    buttonRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-    },
-    button: {
-        flex: 1,
-        marginHorizontal: 5,
-    },
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#95BFC5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  form: {
+    backgroundColor: '#d3d3d3',
+    padding: 20,
+    borderRadius: 8,
+    width: '90%',
+  },
+  inputGroup: {
+    marginBottom: 15,
+  },
+  label: {
+    color: '#000',
+    marginBottom: 5,
+    fontWeight: 'bold',  // <== aqui!
+  },
+  input: {
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    paddingHorizontal: 10,
+    height: 40,
+  },
+  multilineInput: {
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  button: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
 });
 
 export default RegisterBook;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, TextInput, Text, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { loanService } from '../../model/loan/LoanService';
@@ -6,7 +6,6 @@ import { Loan } from '../../model/loan/LoanEntity';
 import { bookService } from '../../model/book/BookService';
 import { Book } from '../../model/book/BookEntity';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
 
 const clientesMock = [
   { name: 'Maria', email: 'Maria@gmail.com' },
@@ -96,7 +95,39 @@ const CreateLoan: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* ... mesmo JSX do formulário */}
+      <View style={styles.form}>
+        <Text style={styles.label}>Título do Livro:</Text>
+        <View style={styles.pickerContainer}>
+          <Picker selectedValue={selectedBook} onValueChange={setSelectedBook}>
+            <Picker.Item label="Selecione" value="" />
+            {livros.map((livro) => (
+              <Picker.Item key={livro.id} label={livro.titulo} value={livro.titulo} />
+            ))}
+          </Picker>
+        </View>
+
+        <Text style={styles.label}>Email do Cliente:</Text>
+        <View style={styles.pickerContainer}>
+          <Picker selectedValue={selectedClient} onValueChange={setSelectedClient}>
+            <Picker.Item label="Selecione" value="" />
+            {clientesMock.map((cliente) => (
+              <Picker.Item key={cliente.email} label={cliente.email} value={cliente.email} />
+            ))}
+          </Picker>
+        </View>
+
+        <Text style={styles.label}>Data Esperada de Retorno:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="dd/mm/aaaa"
+          value={returnDate}
+          onChangeText={setReturnDate}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Emprestar</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

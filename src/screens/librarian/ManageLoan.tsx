@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Modal, TouchableOpacity, TextInput, ScrollView,
 import { Ionicons } from '@expo/vector-icons';
 import { Loan } from '../../model/loan/LoanEntity';
 import { loanService } from '../../model/loan/LoanService';
+import { bookService } from '../../model/book/BookService';
 
 const ManageLoan: React.FC = () => {
   const [loans, setLoans] = useState<Loan[]>([]);
@@ -12,7 +13,6 @@ const ManageLoan: React.FC = () => {
   const [searchEmail, setSearchEmail] = useState('');
   const [showReturned, setShowReturned] = useState(false);
   const [showLoaned, setShowLoaned] = useState(false);
-
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
 
   useEffect(() => {
@@ -31,47 +31,85 @@ const ManageLoan: React.FC = () => {
   };
 
   const calculateFine = (returnDate: string): string => {
-  const returnDt = parseBRDate(returnDate);
-  if (!returnDt) return 'R$ 0,00';
+    const returnDt = parseBRDate(returnDate);
+    if (!returnDt) return 'R$ 0,00';
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  returnDt.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    returnDt.setHours(0, 0, 0, 0);
 
-  if (today <= returnDt) return 'R$ 0,00';
+    if (today <= returnDt) return 'R$ 0,00';
 
-  const adjustedReturnDate = new Date(returnDt);
-  adjustedReturnDate.setDate(adjustedReturnDate.getDate() + 1);
+    const adjustedReturnDate = new Date(returnDt);
+    adjustedReturnDate.setDate(adjustedReturnDate.getDate() + 1);
 
-  const diffTime = today.getTime() - adjustedReturnDate.getTime();
-  const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+    const diffTime = today.getTime() - adjustedReturnDate.getTime();
+    const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
 
-  const fineAmount = diffDays * 0.25;
-
-  return `R$ ${fineAmount.toFixed(2).replace('.', ',')}`;
+    const fineAmount = diffDays * 0.25;
+    return `R$ ${fineAmount.toFixed(2).replace('.', ',')}`;
   };
 
   const handleFinalize = (id: number) => {
-  const today = new Date();
-  const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${
-    (today.getMonth() + 1).toString().padStart(2, '0')
-  }/${today.getFullYear()}`;
+    const today = new Date();
+    const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${
+      (today.getMonth() + 1).toString().padStart(2, '0')
+    }/${today.getFullYear()}`;
 
-  const updated = loanService.update(id, {
-    status: 'Devolvido',
-    returnDateReal: formattedDate,
-  });
+    const updated = loanService.update(id, {
+      status: 'Disponível',
+      returnDateReal: formattedDate,
+    });
 
-  if (updated) {
-    setLoans(loanService.findAll());
-    Alert.alert('Sucesso', 'Empréstimo finalizado com sucesso!');
-  }
-};
-  const handleCancel = (id: number) => {
-    const removed = loanService.delete(id);
-    if (removed) {
+    if (updated) {
+      const loan = loanService.findById(id);
+
+      if (loan) {
+        const book = bookService.findAll().find((b) => b.titulo === loan.title);
+        if (book) {
+          bookService.update(book.id, { status: 'Disponível' });
+        } else {
+          console.warn('Livro não encontrado para atualização.');
+        }
+      } else {
+        console.warn('Empréstimo não encontrado após atualização.');
+      }
+
       setLoans(loanService.findAll());
-      Alert.alert('Cancelado', 'Empréstimo removido com sucesso.');
+      Alert.alert('Sucesso', 'Empréstimo finalizado e livro disponível novamente!');
+    } else {
+      Alert.alert('Erro', 'Falha ao finalizar o empréstimo.');
+    }
+  };
+
+  const handleCancel = (id: number) => {
+    const loan = loanService.findById(id);
+
+    if (!loan) {
+      Alert.alert('Erro', 'Empréstimo não encontrado para cancelamento.');
+      return;
+    }
+
+    const books = bookService.findAll();
+    const book = books.find((b) => b.titulo === loan.title);
+
+    if (book) {
+      const updatedBook = bookService.update(book.id, { status: 'Disponível' });
+      if (!updatedBook) {
+        console.warn('Falha ao atualizar o status do livro.');
+      }
+    } else {
+      console.warn('Livro relacionado ao empréstimo não encontrado.');
+    }
+
+    const removed = loanService.delete(id);
+
+    if (removed) {
+      const updatedLoans = loanService.findAll();
+      setLoans(updatedLoans);
+      Alert.alert('Cancelado', 'Empréstimo removido e livro disponibilizado.');
+    } else {
+      Alert.alert('Erro', 'Falha ao remover o empréstimo.');
     }
   };
 
@@ -80,7 +118,7 @@ const ManageLoan: React.FC = () => {
     const matchesEmail = loan.email.toLowerCase().includes(searchEmail.toLowerCase());
 
     const matchesStatus =
-      (showReturned && loan.status === 'Devolvido') ||
+      (showReturned && loan.status === 'Disponível') ||
       (showLoaned && loan.status === 'Emprestado') ||
       (!showReturned && !showLoaned);
 
@@ -106,7 +144,7 @@ const ManageLoan: React.FC = () => {
 
       <View style={styles.checkboxContainer}>
         <View style={styles.checkboxItem}>
-          <Text>Devolvido</Text>
+          <Text>Disponível</Text>
           <Switch value={showReturned} onValueChange={setShowReturned} />
         </View>
         <View style={styles.checkboxItem}>
@@ -153,12 +191,12 @@ const ManageLoan: React.FC = () => {
 
             <View style={styles.buttonRow}>
               <TouchableOpacity
-                style={[styles.buttonBlue, loan.status === 'Devolvido' && { backgroundColor: '#888' }]}
+                style={[styles.buttonBlue, loan.status === 'Disponível' && { backgroundColor: '#888' }]}
                 onPress={() => handleFinalize(loan.id)}
-                disabled={loan.status === 'Devolvido'}
+                disabled={loan.status === 'Disponível'}
               >
                 <Text style={styles.buttonText}>
-                  {loan.status === 'Devolvido' ? 'Finalizado' : 'Finalizar'}
+                  {loan.status === 'Disponível' ? 'Finalizado' : 'Finalizar'}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonRed} onPress={() => handleCancel(loan.id)}>
@@ -168,64 +206,62 @@ const ManageLoan: React.FC = () => {
           </View>
         ))}
       </ScrollView>
+        <Modal visible={bookModalVisible} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContainer, styles.centeredContent]}>
+              <View style={styles.modalHeader}>
+                <Text style={[styles.modalTitle, styles.centerText]}>
+                  {selectedLoan?.title}
+                </Text>
+                <TouchableOpacity onPress={() => setBookModalVisible(false)}>
+                  <Ionicons name="close" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
 
-      <Modal visible={bookModalVisible} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContainer, styles.centeredContent]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, styles.centerText]}>
-                {selectedLoan?.title}
-              </Text>
-              <TouchableOpacity onPress={() => setBookModalVisible(false)}>
-                <Ionicons name="close" size={24} color="red" />
-              </TouchableOpacity>
-            </View>
+              <View style={styles.modalContentItem}>
+                <Text style={styles.labelBold}>Status:</Text>
+                <Text>{selectedLoan?.status}</Text>
+              </View>
 
-            <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Status:</Text>
-              <Text>{selectedLoan?.status}</Text>
-            </View>
+              <View style={styles.modalContentItem}>
+                <Text style={styles.labelBold}>Data de empréstimo:</Text>
+                <Text>{selectedLoan?.loanDate}</Text>
+              </View>
 
-            <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Data de empréstimo:</Text>
-              <Text>{selectedLoan?.loanDate}</Text>
-            </View>
-
-            <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Data de retorno:</Text>
-              <Text>{selectedLoan?.returnDate}</Text>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={clientModalVisible} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContainer, styles.centeredContent]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, styles.centerText]}>
-                {selectedLoan?.name}
-              </Text>
-              <TouchableOpacity onPress={() => setClientModalVisible(false)}>
-                <Ionicons name="close" size={24} color="red" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Email:</Text>
-              <Text>{selectedLoan?.email}</Text>
-            </View>
-
-            <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Multa:</Text>
-              <Text>{selectedLoan ? calculateFine(selectedLoan.returnDate) : 'R$ 0,00'}</Text>
+              <View style={styles.modalContentItem}>
+                <Text style={styles.labelBold}>Data de retorno:</Text>
+                <Text>{selectedLoan?.returnDate}</Text>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </View>
-  );
-};
+        </Modal>
+        <Modal visible={clientModalVisible} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContainer, styles.centeredContent]}>
+              <View style={styles.modalHeader}>
+                <Text style={[styles.modalTitle, styles.centerText]}>
+                  {selectedLoan?.name}
+                </Text>
+                <TouchableOpacity onPress={() => setClientModalVisible(false)}>
+                  <Ionicons name="close" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.modalContentItem}>
+                <Text style={styles.labelBold}>Email:</Text>
+                <Text>{selectedLoan?.email}</Text>
+              </View>
+
+              <View style={styles.modalContentItem}>
+                <Text style={styles.labelBold}>Multa:</Text>
+                <Text>{selectedLoan ? calculateFine(selectedLoan.returnDate) : 'R$ 0,00'}</Text>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    );
+  };
 
 export default ManageLoan;
 

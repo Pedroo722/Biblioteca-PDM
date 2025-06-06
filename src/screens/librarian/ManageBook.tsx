@@ -3,6 +3,7 @@ import { View, StyleSheet, TextInput, Text, TouchableOpacity, Modal, FlatList } 
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../../model/book/BookEntity';
 import { bookService } from '../../model/book/BookService';
+import { Picker } from '@react-native-picker/picker';
 
 const ManageBook: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -133,12 +134,16 @@ const ManageBook: React.FC = () => {
                 />
 
                 <Text style={styles.modalLabel}>Status:</Text>
-                <TextInput
-                  style={styles.input}
-                  editable={isEditing}
-                  value={selectedBook.status}
-                  onChangeText={(text) => handleFieldChange('status', text)}
-                />
+                  <View style={styles.pickerWrapper}>
+                    <Picker
+                      selectedValue={selectedBook.status}
+                      enabled={isEditing}
+                      onValueChange={(itemValue) => handleFieldChange('status', itemValue)}
+                    >
+                      <Picker.Item label="Disponível" value="Disponível" />
+                      <Picker.Item label="Emprestado" value="Emprestado" />
+                    </Picker>
+                  </View>
 
                 <Text style={styles.modalLabel}>Editora:</Text>
                 <TextInput
@@ -275,5 +280,12 @@ label: {
   fontWeight: 'bold',
   marginRight: 4,
   fontSize: 14,
+},
+pickerWrapper: {
+  backgroundColor: '#e0e0e0',
+  borderRadius: 6,
+  marginTop: 4,
+  height: 35,
+  justifyContent: 'center',
 },
 });

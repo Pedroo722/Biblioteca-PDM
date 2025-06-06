@@ -132,22 +132,22 @@ const ManageLoan: React.FC = () => {
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.labelBold}>Status:</Text>
+              <Text style={styles.labelBold}>Status: </Text>
               <Text>{loan.status}</Text>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.labelBold}>Data de empréstimo:</Text>
+              <Text style={styles.labelBold}>Data de Empréstimo: </Text>
               <Text>{loan.loanDate}</Text>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.labelBold}>Data de retorno:</Text>
+              <Text style={styles.labelBold}>Data Esperada de Retorno: </Text>
               <Text>{loan.returnDate}</Text>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.labelBold}>Data de retorno real:</Text>
+              <Text style={styles.labelBold}>Data de Retorno real: </Text>
               <Text>{loan.returnDateReal}</Text>
             </View>
 

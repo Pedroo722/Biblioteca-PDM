@@ -3,6 +3,8 @@ import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-nati
 import { Button } from 'react-native-paper';
 import { bookService } from '../../model/book/BookService';
 import { Book } from '../../model/book/BookEntity';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const RegisterBook: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -19,7 +21,7 @@ const RegisterBook: React.FC = () => {
     }
 
     const newBook: Book = {
-      id: Date.now().toString(),
+      id: uuidv4(),
       titulo: title,
       autor: author,
       editora: publisher,

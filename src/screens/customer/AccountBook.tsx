@@ -23,6 +23,7 @@ const books: Loan[] = [
     fine: '0.75',
     loanDate: '02/16/2025',
     returnDate: '05/16/2025',
+    returnDateReal: '',
     status: 'Disponível',
   },
   {
@@ -32,6 +33,7 @@ const books: Loan[] = [
     fine: '0',
     loanDate: '03/17/2025',
     returnDate: '05/20/2025',
+    returnDateReal: '04/20/2025',
     status: 'Indisponível',
   },
 ];
@@ -58,8 +60,12 @@ const AccountBook: React.FC = () => {
         <Text style={styles.text}>{item.loanDate}</Text>
       </View>
       <View style={styles.infoRow}>
-        <Text style={styles.label}>Data de Retorno:</Text>
+        <Text style={styles.label}>Data Esperada de Retorno:</Text>
         <Text style={styles.text}>{item.returnDate}</Text>
+      </View>
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Data de Retorno Real:</Text>
+        <Text style={styles.text}>{item.returnDateReal}</Text>
       </View>
       <View style={styles.separator} />
     </TouchableOpacity>
@@ -114,9 +120,13 @@ const AccountBook: React.FC = () => {
                     <Text style={styles.readOnlyBox}>{selectedBook.loanDate}</Text>
                   </View>
                   <View style={styles.column}>
-                    <Text style={styles.modalLabel}>Data de Retorno:</Text>
+                    <Text style={styles.modalLabel}>Data Esperada de Retorno:</Text>
                     <Text style={styles.readOnlyBox}>{selectedBook.returnDate}</Text>
                   </View>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.modalLabel}>Data de Retorno Real:</Text>
+                  <Text style={styles.readOnlyBox}>{selectedBook.returnDateReal}</Text>
                 </View>
               </ScrollView>
             </View>

@@ -3,6 +3,7 @@ import { View, StyleSheet, TextInput, Text, TouchableOpacity, Alert } from 'reac
 import { Picker } from '@react-native-picker/picker';
 import { loanService } from '../../model/loan/LoanService';
 import { Loan } from '../../model/loan/LoanEntity';
+import { bookService } from '../../model/book/BookService';
 
 const livrosMock = ['Nárnia', 'Quarta asa', 'O Hobbit'];
 const clientesMock = [
@@ -17,33 +18,40 @@ const CreateLoan: React.FC = () => {
   const [returnDate, setReturnDate] = useState<string>('');
 
   const handleSubmit = () => {
-    if (!selectedBook || !selectedClient || !returnDate) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-      return;
-    }
+  if (!selectedBook || !selectedClient || !returnDate) {
+    Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+    return;
+  }
 
-    const client = clientesMock.find((c) => c.email === selectedClient);
-    const name = client ? client.name : 'Cliente desconhecido';
-    const today = new Date().toLocaleDateString('pt-BR');
+  const client = clientesMock.find((c) => c.email === selectedClient);
+  const name = client ? client.name : 'Cliente desconhecido';
+  const today = new Date().toLocaleDateString('pt-BR');
 
-    const newLoan: Loan = {
-      title: selectedBook,
-      name,
-      email: selectedClient,
-      loanDate: today,
-      returnDate,
-      fine: 'R$ 0,00',
-      returnDateReal: '',
-      status: 'Emprestado',
-    };
-
-    loanService.create(newLoan);
-    Alert.alert('Sucesso', `Livro "${selectedBook}" emprestado para ${selectedClient}`);
-
-    setSelectedBook('');
-    setSelectedClient('');
-    setReturnDate('');
+  const newLoan: Loan = {
+    title: selectedBook,
+    name,
+    email: selectedClient,
+    loanDate: today,
+    returnDate,
+    fine: 'R$ 0,00',
+    returnDateReal: '',
+    status: 'Emprestado',
   };
+
+  loanService.create(newLoan);
+
+  const allBooks = bookService.findAll();
+  const bookToUpdate = allBooks.find((b) => b.titulo === selectedBook);
+  if (bookToUpdate) {
+    bookService.update(bookToUpdate.id, { status: 'Emprestado' });
+  }
+
+  Alert.alert('Sucesso', `Livro "${selectedBook}" emprestado para ${selectedClient}`);
+
+  setSelectedBook('');
+  setSelectedClient('');
+  setReturnDate('');
+};
 
   return (
     <View style={styles.container}>

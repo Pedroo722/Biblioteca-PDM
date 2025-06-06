@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput, Text, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { loanService } from '../../model/loan/LoanService';
 import { Loan } from '../../model/loan/LoanEntity';
 import { bookService } from '../../model/book/BookService';
+import { Book } from '../../model/book/BookEntity';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
-const livrosMock = ['Nárnia', 'Quarta asa', 'O Hobbit'];
+
 const clientesMock = [
   { name: 'Maria', email: 'Maria@gmail.com' },
   { name: 'João', email: 'João@gmail.com' },
@@ -16,83 +19,104 @@ const CreateLoan: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<string>('');
   const [selectedClient, setSelectedClient] = useState<string>('');
   const [returnDate, setReturnDate] = useState<string>('');
+  const [livros, setLivros] = useState<Book[]>([]);
+
+  useFocusEffect(
+  useCallback(() => {
+    const fetchBooks = async () => {
+      const allBooks = await bookService.findAll();
+      const disponiveis = allBooks.filter((b: Book) => b.status === 'Disponível');
+      setLivros(disponiveis);
+    };
+
+    fetchBooks();
+  }, [])
+);
 
   const handleSubmit = () => {
-  if (!selectedBook || !selectedClient || !returnDate) {
-    Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-    return;
-  }
+    if (!selectedBook || !selectedClient || !returnDate) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
 
-const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-const match = returnDate.match(dateRegex);
-if (!match) {
-  Alert.alert('Erro', 'Data de devolução inválida. Use o formato dd/mm/aaaa.');
-  return;
-}
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    const match = returnDate.match(dateRegex);
+    if (!match) {
+      Alert.alert('Erro', 'Data de devolução inválida. Use o formato dd/mm/aaaa.');
+      return;
+    }
 
-  const [_, day, month, year] = match;
-  const dayNum = parseInt(day);
-  const monthNum = parseInt(month);
-  const yearNum = parseInt(year);
+    const [_, day, month, year] = match;
+    const dayNum = parseInt(day);
+    const monthNum = parseInt(month);
+    const yearNum = parseInt(year);
+    const dateObj = new Date(yearNum, monthNum - 1, dayNum);
+    const isValidDate =
+      dateObj.getFullYear() === yearNum &&
+      dateObj.getMonth() === monthNum - 1 &&
+      dateObj.getDate() === dayNum;
 
-  const dateObj = new Date(yearNum, monthNum - 1, dayNum);
+    if (!isValidDate) {
+      Alert.alert('Erro', 'Data de devolução inválida. Verifique se a data existe.');
+      return;
+    }
 
-  const isValidDate =
-  dateObj.getFullYear() === yearNum &&
-  dateObj.getMonth() === monthNum - 1 &&
-  dateObj.getDate() === dayNum;
+    const bookToUpdate = livros.find((b) => b.titulo === selectedBook);
+    if (!bookToUpdate) {
+      Alert.alert('Erro', 'Livro não encontrado.');
+      return;
+    }
 
-  if (!isValidDate) {
-  Alert.alert('Erro', 'Data de devolução inválida. Verifique se a data existe.');
-  return;
-  }
+    if (bookToUpdate.status === 'Emprestado') {
+      Alert.alert('Erro', 'Este livro já está emprestado.');
+      return;
+    }
 
-  const client = clientesMock.find((c) => c.email === selectedClient);
-  const name = client ? client.name : 'Cliente desconhecido';
-  const today = new Date().toLocaleDateString('pt-BR');
+    const client = clientesMock.find((c) => c.email === selectedClient);
+    const name = client ? client.name : 'Cliente desconhecido';
+    const today = new Date().toLocaleDateString('pt-BR');
 
-  const newLoan: Loan = {
-    title: selectedBook,
-    name,
-    email: selectedClient,
-    loanDate: today,
-    returnDate,
-    fine: 'R$ 0,00',
-    returnDateReal: '',
-    status: 'Emprestado',
-  };
+    const newLoan: Loan = {
+      title: selectedBook,
+      name,
+      email: selectedClient,
+      loanDate: today,
+      returnDate,
+      fine: 'R$ 0,00',
+      returnDateReal: '',
+      status: 'Emprestado',
+    };
 
-  loanService.create(newLoan);
-
-  const allBooks = bookService.findAll();
-  const bookToUpdate = allBooks.find((b) => b.titulo === selectedBook);
-  if (bookToUpdate) {
+    loanService.create(newLoan);
     bookService.update(bookToUpdate.id, { status: 'Emprestado' });
-  }
 
-  Alert.alert('Sucesso', `Livro "${selectedBook}" emprestado para ${selectedClient}`);
+    Alert.alert('Sucesso', `Livro "${selectedBook}" emprestado para ${selectedClient}`);
+    setSelectedBook('');
+    setSelectedClient('');
+    setReturnDate('');
 
-  setSelectedBook('');
-  setSelectedClient('');
-  setReturnDate('');
-};
+    // Atualiza lista de livros disponíveis
+    const allBooks = bookService.findAll();
+    const disponiveis = allBooks.filter((b) => b.status === 'Disponível');
+    setLivros(disponiveis);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.form}>
         <Text style={styles.label}>Título do Livro:</Text>
         <View style={styles.pickerContainer}>
-          <Picker selectedValue={selectedBook} onValueChange={(itemValue) => setSelectedBook(itemValue)}>
+          <Picker selectedValue={selectedBook} onValueChange={setSelectedBook}>
             <Picker.Item label="Selecione" value="" />
-            {livrosMock.map((livro) => (
-              <Picker.Item key={livro} label={livro} value={livro} />
+            {livros.map((livro) => (
+              <Picker.Item key={livro.id} label={livro.titulo} value={livro.titulo} />
             ))}
           </Picker>
         </View>
 
         <Text style={styles.label}>Email do Cliente:</Text>
         <View style={styles.pickerContainer}>
-          <Picker selectedValue={selectedClient} onValueChange={(itemValue) => setSelectedClient(itemValue)}>
+          <Picker selectedValue={selectedClient} onValueChange={setSelectedClient}>
             <Picker.Item label="Selecione" value="" />
             {clientesMock.map((cliente) => (
               <Picker.Item key={cliente.email} label={cliente.email} value={cliente.email} />

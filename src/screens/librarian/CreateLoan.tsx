@@ -135,7 +135,7 @@ const CreateLoan: React.FC = () => {
           </Picker>
         </View>
 
-        <Text style={styles.label}>Autor:</Text>
+        <Text style={styles.label}>Autor(a):</Text>
         <View style={styles.pickerContainer}>
           <Picker selectedValue={selectedAuthor} onValueChange={setSelectedAuthor}>
             <Picker.Item label="Selecione" value="" />

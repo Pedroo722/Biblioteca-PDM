@@ -75,7 +75,7 @@ const ManageBook: React.FC = () => {
     >
       <Text style={styles.title}>{item.titulo}</Text>
       <View style={styles.infoRow}>
-        <Text style={styles.label}>Autor:</Text>
+        <Text style={styles.label}>Autor(a):</Text>
         <Text>{item.autor}</Text>
       </View>
       <View style={styles.infoRow}>
@@ -99,7 +99,7 @@ const ManageBook: React.FC = () => {
       />
       <TextInput
         style={styles.searchInput}
-        placeholder="Buscar por autor"
+        placeholder="Buscar por autor(a)"
         value={searchAuthor}
         onChangeText={setSearchAuthor}
       />

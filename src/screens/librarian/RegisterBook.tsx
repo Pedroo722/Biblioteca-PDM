@@ -18,7 +18,7 @@ const RegisterBook: React.FC = () => {
     }
 
     if (author.trim().length < 3 || /[^a-zA-ZÀ-ÿ\s]/.test(author)) {
-      return 'Autor deve conter ao menos 3 letras e não conter números ou símbolos.';
+      return 'Autor(a) deve conter ao menos 3 letras e não conter números ou símbolos.';
     }
 
     const isbnDigits = isbn.replace(/\D/g, '');
@@ -88,7 +88,7 @@ const RegisterBook: React.FC = () => {
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Autor:</Text>
+          <Text style={styles.label}>Autor(a):</Text>
           <TextInput
             style={styles.input}
             placeholder="Digite o autor(a):"

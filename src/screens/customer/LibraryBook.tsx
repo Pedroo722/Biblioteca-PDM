@@ -40,7 +40,7 @@ const LibraryBook: React.FC = () => {
         />
         <TextInput
           style={styles.input}
-          placeholder="Buscar por autor"
+          placeholder="Buscar por autor(a)"
           value={searchAuthor}
           onChangeText={setSearchAuthor}
         />

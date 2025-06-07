@@ -13,7 +13,7 @@ import ManageLoans from './src/screens/librarian/ManageLoan';
 import RegisterBook from './src/screens/librarian/RegisterBook';
 import RegisterClients from './src/screens/librarian/RegisterClient';
 
-import { initializeDatabase } from './src/database/DataBaseManager';
+import { loadDatabase } from './src/database/DataBaseManager';
 
 const Drawer = createDrawerNavigator();
 
@@ -74,7 +74,7 @@ const CustomDrawerContent = (props: any) => {
 
 const App: React.FC = () => {
   useEffect(() => {
-    initializeDatabase();
+    loadDatabase();
   }, []);
 
   return (

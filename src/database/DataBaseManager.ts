@@ -2,7 +2,6 @@ import * as SQLite from 'expo-sqlite';
 
 const openDatabase = () => {
   const db = SQLite.openDatabaseSync('library.db');
-  console.log('Banco de dados aberto com sucesso!');
   return db;
 };
 
@@ -48,11 +47,9 @@ const createTables = (db: SQLite.SQLiteDatabase) => {
   db.execSync(createBooksTable);
   db.execSync(createClientsTable);
   db.execSync(createLoansTable);
-
-  console.log('Tabelas criadas com sucesso!');
 };
 
-export const initializeDatabase = () => {
+export const loadDatabase = () => {
   const db = openDatabase();
   createTables(db);
 };

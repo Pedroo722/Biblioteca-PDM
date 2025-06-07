@@ -45,12 +45,22 @@ const CreateLoan: React.FC = () => {
 
     const [_, day, month, year] = match;
     const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    dateObj.setHours(0, 0, 0, 0);
+
     if (
       dateObj.getFullYear() !== parseInt(year) ||
       dateObj.getMonth() !== parseInt(month) - 1 ||
       dateObj.getDate() !== parseInt(day)
     ) {
       Alert.alert('Erro', 'Data de devolução inválida. Verifique se a data existe.');
+      return;
+    }
+
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+
+    if (dateObj < todayDate) {
+      Alert.alert('Erro', 'A data de devolução não pode ser anterior à data atual.');
       return;
     }
 
@@ -67,13 +77,13 @@ const CreateLoan: React.FC = () => {
 
     const client = clientes.find((c) => c.email === selectedClient);
     const name = client ? client.name : 'Cliente desconhecido';
-    const today = new Date().toLocaleDateString('pt-BR');
+    const loanDate = todayDate.toLocaleDateString('pt-BR');
 
     const newLoan: Omit<Loan, 'id'> = {
       title: selectedBook,
       name,
       email: selectedClient,
-      loanDate: today,
+      loanDate,
       returnDate,
       fine: 'R$ 0,00',
       returnDateReal: '',

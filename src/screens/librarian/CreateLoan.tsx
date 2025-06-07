@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, Platform, Text, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { loanService } from '../../model/loan/LoanService';
 import { Loan } from '../../model/loan/LoanEntity';
@@ -8,6 +8,7 @@ import { Book } from '../../model/book/BookEntity';
 import { clientService } from '../../model/client/ClientService';
 import { Client } from '../../model/client/ClientEntity';
 import { useFocusEffect } from '@react-navigation/native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const CreateLoan: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<string>('');
@@ -17,6 +18,7 @@ const CreateLoan: React.FC = () => {
   const [livros, setLivros] = useState<Book[]>([]);
   const [clientes, setClientes] = useState<Client[]>([]);
   const [autores, setAutores] = useState<string[]>([]);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -156,12 +158,26 @@ const CreateLoan: React.FC = () => {
         </View>
 
         <Text style={styles.label}>Data Esperada de Retorno:</Text>
-        <TextInput
+        <TouchableOpacity
           style={styles.input}
-          placeholder="dd/mm/aaaa"
-          value={returnDate}
-          onChangeText={setReturnDate}
-        />
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Text>{returnDate || 'Selecione a data'}</Text>
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={new Date()}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) {
+                const formatted = selectedDate.toLocaleDateString('pt-BR');
+                setReturnDate(formatted);
+              }
+            }}
+          />
+        )}
 
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Emprestar</Text>

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, ScrollView, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { Loan } from '../../model/loan/LoanEntity';
+import { loanService } from '../../model/loan/LoanService';
 
 type DrawerParamList = {
   'Meus Livros': undefined;
@@ -15,47 +16,70 @@ type DrawerParamList = {
   'Cadastrar Cliente': undefined;
 };
 
-const books: Loan[] = [
-  {
-    id: 1,
-    email: 'ana@gmail.com',
-    name: 'Ana',
-    title: 'As crônicas de nárnia',
-    fine: '0.75',
-    loanDate: '02/16/2025',
-    returnDate: '05/16/2025',
-    returnDateReal: '',
-    status: 'Disponível',
-  },
-  {
-    id: 2,
-    email: 'joão@gmail.com',
-    name: 'João',
-    title: 'Quarta asa',
-    fine: '0',
-    loanDate: '03/17/2025',
-    returnDate: '05/20/2025',
-    returnDateReal: '04/20/2025',
-    status: 'Indisponível',
-  },
-];
-
 const AccountBook: React.FC = () => {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
+  const [loans, setLoans] = useState<Loan[]>([]);
+  const [searchTitle, setSearchTitle] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Loan | null>(null);
+
+  useEffect(() => {
+    const fetchedLoans = loanService.findAll();
+    setLoans(fetchedLoans);
+  }, []);
 
   const openModal = (book: Loan) => {
     setSelectedBook(book);
     setModalVisible(true);
   };
 
+  const parseBRDate = (dateStr: string): Date | null => {
+    if (!dateStr) return null;
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return null;
+    const [day, month, year] = parts;
+    const isoString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    const dateObj = new Date(isoString);
+    return isNaN(dateObj.getTime()) ? null : dateObj;
+  };
+
+  const calculateFine = (returnDate: string): string => {
+    const returnDt = parseBRDate(returnDate);
+    if (!returnDt) return 'R$ 0,00';
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    returnDt.setHours(0, 0, 0, 0);
+
+    if (today <= returnDt) return 'R$ 0,00';
+
+    const adjustedReturnDate = new Date(returnDt);
+    adjustedReturnDate.setDate(adjustedReturnDate.getDate() + 1);
+
+    const diffTime = today.getTime() - adjustedReturnDate.getTime();
+    const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+
+    const fineAmount = diffDays * 0.25;
+    return `R$ ${fineAmount.toFixed(2).replace('.', ',')}`;
+  };
+
+  const filteredLoans = loans
+  .filter((loan) =>
+    loan.title.toLowerCase().includes(searchTitle.toLowerCase())
+  )
+  .sort((a, b) => {
+    const dateA = parseBRDate(a.returnDate);
+    const dateB = parseBRDate(b.returnDate);
+    if (!dateA || !dateB) return 0;
+    return dateA.getTime() - dateB.getTime();
+  });
+
   const renderItem = ({ item }: { item: Loan }) => (
     <TouchableOpacity onPress={() => openModal(item)} style={styles.bookContainer}>
       <Text style={styles.title}>{item.title}</Text>
       <View style={styles.infoRow}>
         <Text style={styles.labelRed}>Multa:</Text>
-        <Text style={styles.text}>{item.fine}</Text>
+        <Text style={styles.text}>{calculateFine(item.returnDate)}</Text>
       </View>
       <View style={styles.infoRow}>
         <Text style={styles.label}>Data de Empréstimo:</Text>
@@ -75,9 +99,17 @@ const AccountBook: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar por título"
+        value={searchTitle}
+        onChangeText={setSearchTitle}
+      />
+
       <FlatList
-        data={books}
+        data={filteredLoans}
         renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.list}
       />
 
@@ -112,7 +144,7 @@ const AccountBook: React.FC = () => {
                   </View>
                   <View style={styles.column}>
                     <Text style={styles.modalLabel}>Multa:</Text>
-                    <Text style={styles.readOnlyBox}>{selectedBook.fine}</Text>
+                    <Text style={styles.readOnlyBox}>{calculateFine(selectedBook.returnDate)}</Text>
                   </View>
                 </View>
 
@@ -221,5 +253,12 @@ const styles = StyleSheet.create({
   labelRed: {
     color: 'red',
     fontWeight: 'bold',
+  },
+  searchInput: {
+    backgroundColor: '#fff',
+    padding: 10,
+    margin: 10,
+    borderRadius: 8,
+    fontSize: 16,
   },
 });

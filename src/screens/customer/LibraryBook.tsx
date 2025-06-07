@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-  TextInput,
-} from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Modal, ScrollView, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../../model/book/BookEntity';
 import { bookService } from '../../model/book/BookService';
@@ -25,11 +18,11 @@ const LibraryBook: React.FC = () => {
     setBooks(fetchedBooks);
   }, []);
 
-  const filteredBooks = books.filter(
-    (book) =>
+  const filteredBooks = books.filter((book) =>
       book.titulo.toLowerCase().includes(searchTitle.toLowerCase()) &&
       book.autor.toLowerCase().includes(searchAuthor.toLowerCase())
-  );
+  )
+  .sort((a, b) => a.titulo.localeCompare(b.titulo));
 
   const openModal = (book: Book) => {
     setSelectedBook(book);

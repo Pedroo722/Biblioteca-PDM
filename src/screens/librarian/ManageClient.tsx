@@ -66,7 +66,7 @@ const ManageClient: React.FC = () => {
   return (
     <View style={styles.container}>
       <TextInput
-        placeholder="Pesquisar por e-mail"
+        placeholder="Buscar por e-mail"
         style={styles.searchInput}
         value={searchEmail}
         onChangeText={setSearchEmail}

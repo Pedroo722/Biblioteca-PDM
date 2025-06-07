@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, Platform, Text, TouchableOpacity, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
 import { loanService } from '../../model/loan/LoanService';
 import { Loan } from '../../model/loan/LoanEntity';
 import { bookService } from '../../model/book/BookService';
@@ -9,6 +8,7 @@ import { clientService } from '../../model/client/ClientService';
 import { Client } from '../../model/client/ClientEntity';
 import { useFocusEffect } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const CreateLoan: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<string>('');
@@ -20,15 +20,37 @@ const CreateLoan: React.FC = () => {
   const [autores, setAutores] = useState<string[]>([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
+  const [bookItems, setBookItems] = useState<any[]>([]);
+  const [authorItems, setAuthorItems] = useState<any[]>([]);
+  const [clientItems, setClientItems] = useState<any[]>([]);
+
+  const [openBook, setOpenBook] = useState(false);
+  const [openAuthor, setOpenAuthor] = useState(false);
+  const [openClient, setOpenClient] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
         const allBooks = bookService.findAll();
         const disponiveis = (await allBooks).filter((b: Book) => b.status === 'Disponível');
         setLivros(disponiveis);
+        setBookItems(
+          Array.from(new Set(disponiveis.map((b) => b.titulo))).map((titulo) => ({
+            label: titulo,
+            value: titulo,
+          }))
+        );
 
         const allClients = await clientService.findAll();
-        setClientes(allClients);
+        const uniqueClients = Array.from(new Map(allClients.map((c) => [c.email, c])).values());
+
+        setClientes(uniqueClients);
+        setClientItems(
+          uniqueClients.map((cliente) => ({
+            label: cliente.email,
+            value: cliente.email,
+          }))
+        );
       };
       fetchData();
     }, [])
@@ -76,11 +98,6 @@ const CreateLoan: React.FC = () => {
       return;
     }
 
-    if (bookToUpdate.status === 'Emprestado') {
-      Alert.alert('Erro', 'Este livro já está emprestado.');
-      return;
-    }
-
     const client = clientes.find((c) => c.email === selectedClient);
     const name = client ? client.name : 'Cliente desconhecido';
     const loanDate = todayDate.toLocaleDateString('pt-BR');
@@ -104,58 +121,96 @@ const CreateLoan: React.FC = () => {
     setSelectedAuthor('');
     setSelectedClient('');
     setReturnDate('');
+    setAuthorItems([]);
 
     const allBooks = bookService.findAll();
     const disponiveis = (await allBooks).filter((b) => b.status === 'Disponível');
     setLivros(disponiveis);
-    setAutores([]);
+    setBookItems(
+      Array.from(new Set(disponiveis.map((b) => b.titulo))).map((titulo) => ({
+        label: titulo,
+        value: titulo,
+      }))
+    );
   };
+
+  // Função para renderizar o componente quando a lista estiver vazia
+  const renderEmptyList = () => (
+    <Text style={{ textAlign: 'center', paddingVertical: 10, color: '#666' }}>
+      Não tem nada com esse nome
+    </Text>
+  );
 
   return (
     <View style={styles.container}>
       <View style={styles.form}>
         <Text style={styles.label}>Título do Livro:</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={selectedBook}
-            onValueChange={(value) => {
-              setSelectedBook(value);
+        <DropDownPicker
+          open={openBook}
+          setOpen={setOpenBook}
+          items={bookItems}
+          setItems={setBookItems}
+          value={selectedBook}
+          setValue={(callback) => {
+            const value = callback(selectedBook);
+            setSelectedBook(value);
 
-              const autoresDoLivro = livros
-                .filter((livro) => livro.titulo === value)
-                .map((livro) => livro.autor);
+            const autoresDoLivro = livros
+              .filter((livro) => livro.titulo === value)
+              .map((livro) => livro.autor);
 
-              const autoresUnicos = Array.from(new Set(autoresDoLivro));
-              setAutores(autoresUnicos);
-              setSelectedAuthor('');
-            }}
-          >
-            <Picker.Item label="Selecione" value="" />
-            {livros.map((livro) => (
-              <Picker.Item key={livro.id} label={livro.titulo} value={livro.titulo} />
-            ))}
-          </Picker>
-        </View>
+            const autoresUnicos = Array.from(new Set(autoresDoLivro));
+            setAutores(autoresUnicos);
+            setAuthorItems(
+              autoresUnicos.map((autor) => ({
+                label: autor,
+                value: autor,
+              }))
+            );
+            setSelectedAuthor('');
+            return value;
+          }}
+          placeholder="Selecione um título"
+          searchable
+          searchPlaceholder="Digite algo..."
+          ListEmptyComponent={renderEmptyList}
+          zIndex={3000}
+          zIndexInverse={1000}
+        />
 
         <Text style={styles.label}>Autor(a):</Text>
-        <View style={styles.pickerContainer}>
-          <Picker selectedValue={selectedAuthor} onValueChange={setSelectedAuthor}>
-            <Picker.Item label="Selecione" value="" />
-            {autores.map((autor, index) => (
-              <Picker.Item key={index} label={autor} value={autor} />
-            ))}
-          </Picker>
-        </View>
+        <DropDownPicker
+          open={openAuthor}
+          setOpen={setOpenAuthor}
+          items={authorItems}
+          setItems={setAuthorItems}
+          value={selectedAuthor}
+          setValue={setSelectedAuthor}
+          placeholder="Selecione o autor"
+          searchable
+          searchPlaceholder="Digite algo..."
+          ListEmptyComponent={renderEmptyList}
+          zIndex={2500}
+          zIndexInverse={1500}
+          style={{ marginTop: 15 }}
+        />
 
         <Text style={styles.label}>Email do Cliente:</Text>
-        <View style={styles.pickerContainer}>
-          <Picker selectedValue={selectedClient} onValueChange={setSelectedClient}>
-            <Picker.Item label="Selecione" value="" />
-            {clientes.map((cliente) => (
-              <Picker.Item key={cliente.email} label={cliente.email} value={cliente.email} />
-            ))}
-          </Picker>
-        </View>
+        <DropDownPicker
+          open={openClient}
+          setOpen={setOpenClient}
+          items={clientItems}
+          setItems={setClientItems}
+          value={selectedClient}
+          setValue={setSelectedClient}
+          placeholder="Selecione o cliente"
+          searchable
+          searchPlaceholder="Digite algo..."
+          ListEmptyComponent={renderEmptyList}
+          zIndex={2000}
+          zIndexInverse={2000}
+          style={{ marginTop: 15 }}
+        />
 
         <Text style={styles.label}>Data Esperada de Retorno:</Text>
         <TouchableOpacity
@@ -199,6 +254,7 @@ const styles = StyleSheet.create({
     margin: 20,
     padding: 15,
     borderRadius: 10,
+    zIndex: 10,
   },
   label: {
     marginTop: 10,
@@ -210,11 +266,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 40,
     marginTop: 5,
-  },
-  pickerContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    marginTop: 5,
+    justifyContent: 'center',
   },
   button: {
     backgroundColor: '#004080',

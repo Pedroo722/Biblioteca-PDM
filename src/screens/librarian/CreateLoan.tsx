@@ -11,10 +11,12 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const CreateLoan: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<string>('');
+  const [selectedAuthor, setSelectedAuthor] = useState<string>('');
   const [selectedClient, setSelectedClient] = useState<string>('');
   const [returnDate, setReturnDate] = useState<string>('');
   const [livros, setLivros] = useState<Book[]>([]);
   const [clientes, setClientes] = useState<Client[]>([]);
+  const [autores, setAutores] = useState<string[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -31,7 +33,7 @@ const CreateLoan: React.FC = () => {
   );
 
   const handleSubmit = () => {
-    if (!selectedBook || !selectedClient || !returnDate) {
+    if (!selectedBook || !selectedAuthor || !selectedClient || !returnDate) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
@@ -64,9 +66,11 @@ const CreateLoan: React.FC = () => {
       return;
     }
 
-    const bookToUpdate = livros.find((b) => b.titulo === selectedBook);
+    const bookToUpdate = livros.find(
+      (b) => b.titulo === selectedBook && b.autor === selectedAuthor
+    );
     if (!bookToUpdate) {
-      Alert.alert('Erro', 'Livro não encontrado.');
+      Alert.alert('Erro', 'Livro não encontrado com esse título e autor.');
       return;
     }
 
@@ -95,12 +99,14 @@ const CreateLoan: React.FC = () => {
 
     Alert.alert('Sucesso', `Livro "${selectedBook}" emprestado para ${selectedClient}`);
     setSelectedBook('');
+    setSelectedAuthor('');
     setSelectedClient('');
     setReturnDate('');
 
     const allBooks = bookService.findAll();
     const disponiveis = allBooks.filter((b) => b.status === 'Disponível');
     setLivros(disponiveis);
+    setAutores([]);
   };
 
   return (
@@ -108,10 +114,33 @@ const CreateLoan: React.FC = () => {
       <View style={styles.form}>
         <Text style={styles.label}>Título do Livro:</Text>
         <View style={styles.pickerContainer}>
-          <Picker selectedValue={selectedBook} onValueChange={setSelectedBook}>
+          <Picker
+            selectedValue={selectedBook}
+            onValueChange={(value) => {
+              setSelectedBook(value);
+
+              const autoresDoLivro = livros
+                .filter((livro) => livro.titulo === value)
+                .map((livro) => livro.autor);
+
+              const autoresUnicos = Array.from(new Set(autoresDoLivro));
+              setAutores(autoresUnicos);
+              setSelectedAuthor('');
+            }}
+          >
             <Picker.Item label="Selecione" value="" />
             {livros.map((livro) => (
               <Picker.Item key={livro.id} label={livro.titulo} value={livro.titulo} />
+            ))}
+          </Picker>
+        </View>
+
+        <Text style={styles.label}>Autor:</Text>
+        <View style={styles.pickerContainer}>
+          <Picker selectedValue={selectedAuthor} onValueChange={setSelectedAuthor}>
+            <Picker.Item label="Selecione" value="" />
+            {autores.map((autor, index) => (
+              <Picker.Item key={index} label={autor} value={autor} />
             ))}
           </Picker>
         </View>

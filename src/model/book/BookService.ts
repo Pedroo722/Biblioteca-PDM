@@ -1,37 +1,27 @@
 import { Book } from './BookEntity';
+import { BookRepository } from '../../database/repository/BookRepository';
 
 class BookService {
-  private books: Book[] = [];
-  private nextId = 1;
+  private repository = new BookRepository();
 
-  create(book: Omit<Book, 'id'>): Book {
-    const newBook = { ...book, id: this.nextId++ };
-    this.books.push(newBook);
-    return newBook;
+  async create(book: Omit<Book, 'id'>): Promise<Book> {
+    return await this.repository.create(book);
   }
 
-  findAll(): Book[] {
-    return this.books;
+  async findAll(): Promise<Book[]> {
+    return await this.repository.findAll();
   }
 
-  findById(id: number): Book | undefined {
-    return this.books.find(book => book.id === id);
+  async findById(id: number): Promise<Book | undefined> {
+    return await this.repository.findById(id);
   }
 
-  update(id: number, updatedBook: Partial<Book>): Book | null {
-    const index = this.books.findIndex(book => book.id === id);
-    if (index === -1) return null;
-
-    this.books[index] = { ...this.books[index], ...updatedBook };
-    return this.books[index];
+  async update(id: number, updatedBook: Partial<Book>): Promise<Book | null> {
+    return await this.repository.update(id, updatedBook);
   }
 
-  delete(id: number): boolean {
-    const index = this.books.findIndex(book => book.id === id);
-    if (index === -1) return false;
-
-    this.books.splice(index, 1);
-    return true;
+  async delete(id: number): Promise<boolean> {
+    return await this.repository.delete(id);
   }
 }
 

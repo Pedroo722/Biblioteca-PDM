@@ -20,9 +20,9 @@ const CreateLoan: React.FC = () => {
 
   useFocusEffect(
     useCallback(() => {
-      const fetchData = () => {
+      const fetchData = async () => {
         const allBooks = bookService.findAll();
-        const disponiveis = allBooks.filter((b: Book) => b.status === 'Disponível');
+        const disponiveis = (await allBooks).filter((b: Book) => b.status === 'Disponível');
         setLivros(disponiveis);
 
         const allClients = clientService.findAll();
@@ -32,7 +32,7 @@ const CreateLoan: React.FC = () => {
     }, [])
   );
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedBook || !selectedAuthor || !selectedClient || !returnDate) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
@@ -104,7 +104,7 @@ const CreateLoan: React.FC = () => {
     setReturnDate('');
 
     const allBooks = bookService.findAll();
-    const disponiveis = allBooks.filter((b) => b.status === 'Disponível');
+    const disponiveis = (await allBooks).filter((b) => b.status === 'Disponível');
     setLivros(disponiveis);
     setAutores([]);
   };

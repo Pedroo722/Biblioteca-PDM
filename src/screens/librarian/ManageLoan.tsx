@@ -50,7 +50,7 @@ const ManageLoan: React.FC = () => {
     return `R$ ${fineAmount.toFixed(2).replace('.', ',')}`;
   };
 
-  const handleFinalize = (id: number) => {
+  const handleFinalize = async (id: number) => {
     const today = new Date();
     const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${
       (today.getMonth() + 1).toString().padStart(2, '0')
@@ -65,7 +65,7 @@ const ManageLoan: React.FC = () => {
       const loan = loanService.findById(id);
 
       if (loan) {
-        const book = bookService.findAll().find((b) => b.titulo === loan.title);
+        const book = (await bookService.findAll()).find((b: { titulo: string; }) => b.titulo === loan.title);
         if (book) {
           bookService.update(book.id, { status: 'Disponível' });
         } else {
@@ -82,7 +82,7 @@ const ManageLoan: React.FC = () => {
     }
   };
 
-  const handleCancel = (id: number) => {
+  const handleCancel = async (id: number) => {
     const loan = loanService.findById(id);
 
     if (!loan) {
@@ -91,7 +91,7 @@ const ManageLoan: React.FC = () => {
     }
 
     const books = bookService.findAll();
-    const book = books.find((b) => b.titulo === loan.title);
+    const book = (await books).find((b: { titulo: string; }) => b.titulo === loan.title);
 
     if (book) {
       const updatedBook = bookService.update(book.id, { status: 'Disponível' });

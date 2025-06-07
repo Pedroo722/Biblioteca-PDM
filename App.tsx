@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
@@ -12,6 +12,8 @@ import ManageClients from './src/screens/librarian/ManageClient';
 import ManageLoans from './src/screens/librarian/ManageLoan';
 import RegisterBook from './src/screens/librarian/RegisterBook';
 import RegisterClients from './src/screens/librarian/RegisterClient';
+
+import { initializeDatabase } from './src/database/DataBaseManager';
 
 const Drawer = createDrawerNavigator();
 
@@ -71,6 +73,10 @@ const CustomDrawerContent = (props: any) => {
 };
 
 const App: React.FC = () => {
+  useEffect(() => {
+    initializeDatabase();
+  }, []);
+
   return (
     <NavigationContainer>
       <Drawer.Navigator

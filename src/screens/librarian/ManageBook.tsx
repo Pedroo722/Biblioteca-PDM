@@ -17,8 +17,8 @@ const ManageBook: React.FC = () => {
     loadBooks();
   }, []);
 
-  const loadBooks = () => {
-    const sortedBooks = bookService.findAll().sort((a, b) => {
+  const loadBooks = async () => {
+    const sortedBooks = (await bookService.findAll()).sort((a, b) => {
       return a.titulo.localeCompare(b.titulo); 
     });
     setBooks(sortedBooks);

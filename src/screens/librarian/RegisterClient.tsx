@@ -11,13 +11,36 @@ const RegisterClient: React.FC = () => {
   const [password, setPassword] = useState('');
   const [address, setAddress] = useState('');
 
+  const validateClient = (): string | null => {
+    if (!name.trim() || name.trim().length < 3 || /[^a-zA-ZÀ-ÿ\s]/.test(name)) {
+      return 'Nome deve ter ao menos 3 letras e não conter números ou símbolos.';
+    }
+
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10) {
+      return 'Telefone deve conter pelo menos 10 dígitos.';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return 'Email inválido.';
+    }
+
+    if (address.trim().length < 10) {
+      return 'Endereço deve conter pelo menos 10 caracteres.';
+    }
+
+    return null;
+  };
+
   const handleSave = () => {
-    if (!name || !phone || !email || !password || !address) {
-      Alert.alert('Erro', 'Preencha todos os campos!');
+    const validationError = validateClient();
+    if (validationError) {
+      Alert.alert('Erro de validação', validationError);
       return;
     }
 
-    const newClient = {
+    const newClient: Omit<Client, 'id'> = {
       name,
       phone,
       email,
@@ -136,7 +159,7 @@ const styles = StyleSheet.create({
   label: {
     color: '#000',
     marginBottom: 5,
-    fontWeight: 'bold',  // <== aqui!
+    fontWeight: 'bold',
   },
   input: {
     backgroundColor: '#fff',

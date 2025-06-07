@@ -123,6 +123,13 @@ const ManageLoan: React.FC = () => {
       (!showReturned && !showLoaned);
 
     return matchesTitle && matchesEmail && matchesStatus;
+  })
+  .sort((a, b) => {
+    const dateA = parseBRDate(a.returnDate);
+    const dateB = parseBRDate(b.returnDate);
+
+    if (!dateA || !dateB) return 0; 
+    return dateA.getTime() - dateB.getTime(); 
   });
 
   return (

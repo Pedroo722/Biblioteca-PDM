@@ -5,28 +5,28 @@ import { loanService } from '../../model/loan/LoanService';
 import { Loan } from '../../model/loan/LoanEntity';
 import { bookService } from '../../model/book/BookService';
 import { Book } from '../../model/book/BookEntity';
+import { clientService } from '../../model/client/ClientService';
+import { Client } from '../../model/client/ClientEntity';
 import { useFocusEffect } from '@react-navigation/native';
-
-const clientesMock = [
-  { name: 'Maria', email: 'Maria@gmail.com' },
-  { name: 'João', email: 'João@gmail.com' },
-  { name: 'Ana', email: 'Ana@gmail.com' },
-];
 
 const CreateLoan: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<string>('');
   const [selectedClient, setSelectedClient] = useState<string>('');
   const [returnDate, setReturnDate] = useState<string>('');
   const [livros, setLivros] = useState<Book[]>([]);
+  const [clientes, setClientes] = useState<Client[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      const fetchBooks = () => {
+      const fetchData = () => {
         const allBooks = bookService.findAll();
         const disponiveis = allBooks.filter((b: Book) => b.status === 'Disponível');
         setLivros(disponiveis);
+
+        const allClients = clientService.findAll();
+        setClientes(allClients);
       };
-      fetchBooks();
+      fetchData();
     }, [])
   );
 
@@ -65,7 +65,7 @@ const CreateLoan: React.FC = () => {
       return;
     }
 
-    const client = clientesMock.find((c) => c.email === selectedClient);
+    const client = clientes.find((c) => c.email === selectedClient);
     const name = client ? client.name : 'Cliente desconhecido';
     const today = new Date().toLocaleDateString('pt-BR');
 
@@ -110,7 +110,7 @@ const CreateLoan: React.FC = () => {
         <View style={styles.pickerContainer}>
           <Picker selectedValue={selectedClient} onValueChange={setSelectedClient}>
             <Picker.Item label="Selecione" value="" />
-            {clientesMock.map((cliente) => (
+            {clientes.map((cliente) => (
               <Picker.Item key={cliente.email} label={cliente.email} value={cliente.email} />
             ))}
           </Picker>

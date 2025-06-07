@@ -3,8 +3,6 @@ import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-nati
 import { Button } from 'react-native-paper';
 import { bookService } from '../../model/book/BookService';
 import { Book } from '../../model/book/BookEntity';
-import uuid from 'react-native-uuid';
-
 
 const RegisterBook: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -14,13 +12,41 @@ const RegisterBook: React.FC = () => {
   const [publicationYear, setPublicationYear] = useState('');
   const [synopsis, setSynopsis] = useState('');
 
+  const validateBook = (): string | null => {
+    if (title.trim().length < 1) {
+      return 'Título não pode ser vazio.';
+    }
+
+    if (author.trim().length < 3 || /[^a-zA-ZÀ-ÿ\s]/.test(author)) {
+      return 'Autor deve conter ao menos 3 letras e não conter números ou símbolos.';
+    }
+
+    const isbnDigits = isbn.replace(/\D/g, '');
+    if (isbnDigits.length !== 10) {
+      return 'ISBN deve conter exatamente 10 dígitos.';
+    }
+
+    const year = parseInt(publicationYear);
+    const currentYear = new Date().getFullYear();
+    if (isNaN(year) || year < 1500 || year > currentYear) {
+      return `Ano de publicação deve ser entre 1500 e ${currentYear}.`;
+    }
+
+    if (synopsis && synopsis.trim().length < 10) {
+      return 'Sinopse deve conter ao menos 10 caracteres, se preenchida.';
+    }
+
+    return null;
+  };
+
   const handleSave = () => {
-    if (!title || !author || !isbn || !publicationYear) {
-      Alert.alert('Erro', 'Preencha todos os campos obrigatórios.');
+    const validationError = validateBook();
+    if (validationError) {
+      Alert.alert('Erro de validação', validationError);
       return;
     }
 
-    const newBook = {
+    const newBook: Omit<Book, 'id'> = {
       titulo: title,
       autor: author,
       editora: publisher,
@@ -30,10 +56,16 @@ const RegisterBook: React.FC = () => {
       status: 'Disponível',
     };
 
-    bookService.create(newBook);
+    try {
+      bookService.create(newBook);
+      Alert.alert('Sucesso', 'Livro registrado com sucesso!');
+      clearForm();
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível registrar o livro.');
+    }
+  };
 
-    Alert.alert('Sucesso', 'Livro registrado com sucesso!');
-
+  const clearForm = () => {
     setTitle('');
     setAuthor('');
     setPublisher('');
@@ -126,6 +158,8 @@ const RegisterBook: React.FC = () => {
   );
 };
 
+export default RegisterBook;
+
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -146,7 +180,7 @@ const styles = StyleSheet.create({
   label: {
     color: '#000',
     marginBottom: 5,
-    fontWeight: 'bold',  // <== aqui!
+    fontWeight: 'bold',
   },
   input: {
     backgroundColor: '#fff',
@@ -168,5 +202,3 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
 });
-
-export default RegisterBook;

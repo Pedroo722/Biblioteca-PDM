@@ -1,43 +1,37 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Modal, ScrollView, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+  TextInput,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Book } from '../../model/book/BookEntity';
+import { bookService } from '../../model/book/BookService';
 
 const LibraryBook: React.FC = () => {
+  const [books, setBooks] = useState<Book[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [searchTitle, setSearchTitle] = useState('');
   const [searchAuthor, setSearchAuthor] = useState('');
 
-  const books = [
-    {
-      title: 'As crônicas de nárnia',
-      author: 'C. S. Lewis',
-      status: 'Disponível',
-      publisher: 'HarperCollins',
-      isbn: '857827069X',
-      year: '2005',
-      synopsis:
-        'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    },
-    {
-      title: 'O Senhor dos Anéis',
-      author: 'J. R. R. Tolkien',
-      status: 'Indisponível',
-      publisher: 'Martins Fontes',
-      isbn: '8533615546',
-      year: '1954',
-      synopsis:
-        'Uma aventura épica sobre a luta entre o bem e o mal na Terra Média.',
-    },
-  ];
+  useEffect(() => {
+    const fetchedBooks = bookService.findAll().sort((a, b) =>
+      a.titulo.localeCompare(b.titulo)
+    );
+    setBooks(fetchedBooks);
+  }, []);
 
   const filteredBooks = books.filter(
     (book) =>
-      book.title.toLowerCase().includes(searchTitle.toLowerCase()) &&
-      book.author.toLowerCase().includes(searchAuthor.toLowerCase())
+      book.titulo.toLowerCase().includes(searchTitle.toLowerCase()) &&
+      book.autor.toLowerCase().includes(searchAuthor.toLowerCase())
   );
 
-  const openModal = (book: any) => {
+  const openModal = (book: Book) => {
     setSelectedBook(book);
     setModalVisible(true);
   };
@@ -60,10 +54,10 @@ const LibraryBook: React.FC = () => {
       </View>
 
       <ScrollView>
-        {filteredBooks.map((book, index) => (
-          <View key={index} style={styles.bookItem}>
+        {filteredBooks.map((book) => (
+          <View key={book.id} style={styles.bookItem}>
             <TouchableOpacity onPress={() => openModal(book)}>
-              <Text style={styles.bookTitle}>{book.title}</Text>
+              <Text style={styles.bookTitle}>{book.titulo}</Text>
             </TouchableOpacity>
             <View style={styles.infoRow}>
               <Text style={styles.label}>Status:</Text>
@@ -71,11 +65,11 @@ const LibraryBook: React.FC = () => {
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.label}>Editora:</Text>
-              <Text style={styles.bookMeta}>{book.publisher}</Text>
+              <Text style={styles.bookMeta}>{book.editora}</Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.label}>Autor:</Text>
-              <Text style={styles.bookMeta}>{book.author}</Text>
+              <Text style={styles.bookMeta}>{book.autor}</Text>
             </View>
           </View>
         ))}
@@ -86,24 +80,22 @@ const LibraryBook: React.FC = () => {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <View style={styles.modalHeader}>
-                <View></View>
-                <Text style={styles.modalTitle}>{selectedBook.title}</Text>
+                <View />
+                <Text style={styles.modalTitle}>{selectedBook.titulo}</Text>
                 <TouchableOpacity onPress={() => setModalVisible(false)}>
                   <Ionicons name="close" size={24} color="red" />
                 </TouchableOpacity>
               </View>
 
               <ScrollView>
-                <Text style={styles.modalLabel}>Autor(a): {selectedBook.author}</Text>
-
                 <View style={styles.row}>
                   <View style={styles.column}>
-                    <Text style={styles.modalLabel}>Status:</Text>
-                    <Text style={styles.readOnlyBox}>{selectedBook.status}</Text>
+                    <Text style={styles.modalLabel}>Autor(a):</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.autor}</Text>
                   </View>
                   <View style={styles.column}>
                     <Text style={styles.modalLabel}>Editora:</Text>
-                    <Text style={styles.readOnlyBox}>{selectedBook.publisher}</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.editora}</Text>
                   </View>
                 </View>
 
@@ -114,12 +106,20 @@ const LibraryBook: React.FC = () => {
                   </View>
                   <View style={styles.column}>
                     <Text style={styles.modalLabel}>Ano de publicação:</Text>
-                    <Text style={styles.readOnlyBox}>{selectedBook.year}</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.ano}</Text>
                   </View>
                 </View>
 
-                <Text style={styles.modalLabel}>Sinopse:</Text>
-                <Text style={styles.readOnlyBox}>{selectedBook.synopsis}</Text>
+                <View style={styles.row}>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Status:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.status}</Text>
+                  </View>
+                  <View style={styles.column}>
+                    <Text style={styles.modalLabel}>Sinopse:</Text>
+                    <Text style={styles.readOnlyBox}>{selectedBook.sinopse}</Text>
+                  </View>
+                </View>
               </ScrollView>
             </View>
           </View>
@@ -130,6 +130,7 @@ const LibraryBook: React.FC = () => {
 };
 
 export default LibraryBook;
+
 
 const styles = StyleSheet.create({
   container: {

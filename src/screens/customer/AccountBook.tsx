@@ -24,8 +24,12 @@ const AccountBook: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<Loan | null>(null);
 
   useEffect(() => {
-    const fetchedLoans = loanService.findAll();
-    setLoans(fetchedLoans);
+    const fetchLoans = async () => {
+      const fetchedLoans = await loanService.findAll();
+      setLoans(fetchedLoans);
+    };
+
+    fetchLoans();
   }, []);
 
   const openModal = (book: Loan) => {

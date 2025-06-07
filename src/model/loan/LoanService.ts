@@ -1,37 +1,27 @@
 import { Loan } from './LoanEntity';
+import { LoanRepository } from '../../database/repository/LoanRepository';
 
 export class LoanService {
-  private loans: Loan[] = [];
-  private nextId = 1;
+  private repository = new LoanRepository();
 
-  create(loan: Omit<Loan, 'id'>): Loan {
-    const newLoan = { ...loan, id: this.nextId++ };
-    this.loans.push(newLoan);
-    return newLoan;
+  async create(loan: Omit<Loan, 'id'>): Promise<Loan> {
+    return await this.repository.create(loan);
   }
 
-  findAll(): Loan[] {
-    return this.loans;
+  async findAll(): Promise<Loan[]> {
+    return await this.repository.findAll();
   }
 
-  findById(id: number): Loan | undefined {
-    return this.loans.find(loan => loan.id === id);
+  async findById(id: number): Promise<Loan | undefined> {
+    return await this.repository.findById(id);
   }
 
-  update(id: number, updatedLoan: Partial<Loan>): Loan | null {
-    const index = this.loans.findIndex(loan => loan.id === id);
-    if (index === -1) return null;
-
-    this.loans[index] = { ...this.loans[index], ...updatedLoan };
-    return this.loans[index];
+  async update(id: number, updatedLoan: Partial<Loan>): Promise<Loan | null> {
+    return await this.repository.update(id, updatedLoan);
   }
 
-  delete(id: number): boolean {
-    const index = this.loans.findIndex(loan => loan.id === id);
-    if (index === -1) return false;
-
-    this.loans.splice(index, 1);
-    return true;
+  async delete(id: number): Promise<boolean> {
+    return await this.repository.delete(id);
   }
 }
 

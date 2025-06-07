@@ -16,8 +16,11 @@ const ManageLoan: React.FC = () => {
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
 
   useEffect(() => {
-    const data = loanService.findAll();
-    setLoans(data);
+    const fetchLoans = async () => {
+      const data = await loanService.findAll();
+      setLoans(data);
+    };
+    fetchLoans();
   }, []);
 
   const parseBRDate = (dateStr: string): Date | null => {
@@ -61,8 +64,8 @@ const ManageLoan: React.FC = () => {
       returnDateReal: formattedDate,
     });
 
-    if (updated) {
-      const loan = loanService.findById(id);
+    if (await updated) {
+      const loan = await loanService.findById(id);
 
       if (loan) {
         const book = (await bookService.findAll()).find((b: { titulo: string; }) => b.titulo === loan.title);
@@ -75,7 +78,7 @@ const ManageLoan: React.FC = () => {
         console.warn('Empréstimo não encontrado após atualização.');
       }
 
-      setLoans(loanService.findAll());
+      setLoans(await loanService.findAll());
       Alert.alert('Sucesso', 'Empréstimo finalizado e livro disponível novamente!');
     } else {
       Alert.alert('Erro', 'Falha ao finalizar o empréstimo.');
@@ -83,7 +86,7 @@ const ManageLoan: React.FC = () => {
   };
 
   const handleCancel = async (id: number) => {
-    const loan = loanService.findById(id);
+    const loan = await loanService.findById(id);
 
     if (!loan) {
       Alert.alert('Erro', 'Empréstimo não encontrado para cancelamento.');
@@ -104,9 +107,9 @@ const ManageLoan: React.FC = () => {
 
     const removed = loanService.delete(id);
 
-    if (removed) {
+    if (await removed) {
       const updatedLoans = loanService.findAll();
-      setLoans(updatedLoans);
+      setLoans(await updatedLoans);
       Alert.alert('Cancelado', 'Empréstimo removido e livro disponibilizado.');
     } else {
       Alert.alert('Erro', 'Falha ao remover o empréstimo.');

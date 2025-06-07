@@ -1,37 +1,27 @@
 import { Client } from './ClientEntity';
+import { ClientRepository } from '../../database/repository/ClientRepository';
 
 export class ClientService {
-  private clients: Client[] = [];
-  private nextId = 1;
+  private repository = new ClientRepository();
 
-  create(client: Omit<Client, 'id'>): Client {
-    const newClient = { ...client, id: this.nextId++ };
-    this.clients.push(newClient);
-    return newClient;
+  async create(client: Omit<Client, 'id'>): Promise<Client> {
+    return await this.repository.create(client);
   }
 
-  findAll(): Client[] {
-    return this.clients;
+  async findAll(): Promise<Client[]> {
+    return await this.repository.findAll();
   }
 
-  findById(id: number): Client | undefined {
-    return this.clients.find(client => client.id === id);
+  async findById(id: number): Promise<Client | undefined> {
+    return await this.repository.findById(id);
   }
 
-  update(id: number, updatedClient: Partial<Client>): Client | null {
-    const index = this.clients.findIndex(client => client.id === id);
-    if (index === -1) return null;
-
-    this.clients[index] = { ...this.clients[index], ...updatedClient };
-    return this.clients[index];
+  async update(id: number, updatedClient: Partial<Client>): Promise<Client | null> {
+    return await this.repository.update(id, updatedClient);
   }
 
-  delete(id: number): boolean {
-    const index = this.clients.findIndex(client => client.id === id);
-    if (index === -1) return false;
-
-    this.clients.splice(index, 1);
-    return true;
+  async delete(id: number): Promise<boolean> {
+    return await this.repository.delete(id);
   }
 }
 

@@ -14,14 +14,16 @@ const ManageClient: React.FC = () => {
     loadClients();
   }, []);
 
-  const loadClients = () => {
-    const allClients = clientService.findAll();
-    
-    allClients.sort((a, b) => a.name.localeCompare(b.name));
-    
-    setClients(allClients);
+  const loadClients = async () => {
+    try {
+      const allClients = await clientService.findAll();
+      allClients.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' }));
+      setClients(allClients);
+    } catch (error) {
+      console.error('Erro ao carregar clientes:', error);
+    }
   };
-
+  
   const filteredClients = clients.filter(client =>
     client.email.toLowerCase().includes(searchEmail.toLowerCase())
   );

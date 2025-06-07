@@ -12,10 +12,13 @@ const LibraryBook: React.FC = () => {
   const [searchAuthor, setSearchAuthor] = useState('');
 
   useEffect(() => {
-    const fetchedBooks = bookService.findAll().sort((a, b) =>
-      a.titulo.localeCompare(b.titulo)
-    );
-    setBooks(fetchedBooks);
+    const fetchBooks = async () => {
+      const books = await bookService.findAll();
+      const sortedBooks = books.sort((a, b) => a.titulo.localeCompare(b.titulo));
+      setBooks(sortedBooks);
+    };
+
+    fetchBooks();
   }, []);
 
   const filteredBooks = books.filter((book) =>

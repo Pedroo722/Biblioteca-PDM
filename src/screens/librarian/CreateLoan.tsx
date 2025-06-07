@@ -25,7 +25,7 @@ const CreateLoan: React.FC = () => {
         const disponiveis = (await allBooks).filter((b: Book) => b.status === 'Disponível');
         setLivros(disponiveis);
 
-        const allClients = clientService.findAll();
+        const allClients = await clientService.findAll();
         setClientes(allClients);
       };
       fetchData();

@@ -9,10 +9,10 @@ export class BookRepository {
     }
     
     async create(book: Omit<Book, 'id'>): Promise<Book> {
-        const result = await this.db.runAsync(
-        `INSERT INTO Books (titulo, autor, status, editora, isbn, ano, sinopse)
+        const result = this.db.runSync(
+            `INSERT INTO Books (titulo, autor, status, editora, isbn, ano, sinopse)
         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [book.titulo, book.autor, book.status, book.editora, book.isbn, book.ano, book.sinopse]
+            [book.titulo, book.autor, book.status, book.editora, book.isbn, book.ano, book.sinopse]
         );
 
         const id = result.lastInsertRowId!;
@@ -20,12 +20,12 @@ export class BookRepository {
     }
 
     async findAll(): Promise<Book[]> {
-        const result = await this.db.getAllAsync<Book>(`SELECT * FROM Books`);
+        const result = this.db.getAllSync<Book>(`SELECT * FROM Books`);
         return result;
     }
 
     async findById(id: number): Promise<Book | undefined> {
-        const result = await this.db.getFirstAsync<Book>(`SELECT * FROM Books WHERE id = ?`, [id]);
+        const result = this.db.getFirstSync<Book>(`SELECT * FROM Books WHERE id = ?`, [id]);
         return result ?? undefined;
     }
 
@@ -37,12 +37,12 @@ export class BookRepository {
         const values = keys.map(key => (updatedBook as any)[key]);
         values.push(id);
 
-        const result = await this.db.runAsync(`UPDATE Books SET ${fields} WHERE id = ?`, values);
+        const result = this.db.runSync(`UPDATE Books SET ${fields} WHERE id = ?`, values);
         return result.changes > 0 ? { ...updatedBook, id } as Book : null;
     }
 
     async delete(id: number): Promise<boolean> {
-        const result = await this.db.runAsync(`DELETE FROM Books WHERE id = ?`, [id]);
+        const result = this.db.runSync(`DELETE FROM Books WHERE id = ?`, [id]);
         return result.changes > 0;
     }
 }

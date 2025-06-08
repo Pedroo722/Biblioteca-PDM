@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, TextInput, Text, ScrollView, TouchableOpacity, Modal, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Client } from '../../model/client/ClientEntity';
 import { clientService } from '../../model/client/ClientService';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ManageClient: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<(Client & { id: number }) | null>(null);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [searchEmail, setSearchEmail] = useState('');
   const [clients, setClients] = useState<Client[]>([]);
 
@@ -20,9 +21,11 @@ const ManageClient: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    loadClients();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadClients();
+    }, [])
+  );
 
   const filteredClients = clients.filter(client =>
     client.email.toLowerCase().includes(searchEmail.toLowerCase())
@@ -34,9 +37,9 @@ const ManageClient: React.FC = () => {
     }
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (selectedClient) {
-      clientService.update(selectedClient.id, selectedClient);
+      await clientService.update(selectedClient.id, selectedClient);
       loadClients();
       setModalVisible(false);
       Alert.alert('Sucesso', 'Cliente atualizado!');
@@ -53,8 +56,8 @@ const ManageClient: React.FC = () => {
           {
             text: 'Excluir',
             style: 'destructive',
-            onPress: () => {
-              clientService.delete(selectedClient.id);
+            onPress: async () => {
+              await clientService.delete(selectedClient.id);
               loadClients();
               setModalVisible(false);
               Alert.alert('Removido', 'Cliente excluído com sucesso.');

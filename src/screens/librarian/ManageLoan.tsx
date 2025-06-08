@@ -15,14 +15,13 @@ const ManageLoan: React.FC = () => {
   const [showLoaned, setShowLoaned] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
 
-  // Fetch loans data when the component mounts
   const loadLoans = async () => {
     const data = await loanService.findAll();
     setLoans(data);
   };
 
   useEffect(() => {
-    loadLoans(); // Initial load of loans
+    loadLoans();
   }, []);
 
   const parseBRDate = (dateStr: string): Date | null => {
@@ -80,7 +79,7 @@ const ManageLoan: React.FC = () => {
         console.warn('Empréstimo não encontrado após atualização.');
       }
 
-      loadLoans(); // Reload loans after the update
+      loadLoans();
       Alert.alert('Sucesso', 'Empréstimo finalizado e livro disponível novamente!');
     } else {
       Alert.alert('Erro', 'Falha ao finalizar o empréstimo.');
@@ -110,7 +109,7 @@ const ManageLoan: React.FC = () => {
     const removed = await loanService.delete(id);
 
     if (removed) {
-      loadLoans(); // Reload loans after deletion
+      loadLoans();
       Alert.alert('Cancelado', 'Empréstimo removido e livro disponibilizado.');
     } else {
       Alert.alert('Erro', 'Falha ao remover o empréstimo.');

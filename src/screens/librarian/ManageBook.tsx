@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, TextInput, Text, TouchableOpacity, Modal, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../../model/book/BookEntity';
 import { bookService } from '../../model/book/BookService';
 import { Picker } from '@react-native-picker/picker';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ManageBook: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -12,13 +13,15 @@ const ManageBook: React.FC = () => {
   const [searchTitle, setSearchTitle] = useState('');
   const [searchAuthor, setSearchAuthor] = useState('');
 
-  useEffect(() => {
-    loadBooks();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadBooks();
+    }, [])
+  );
 
   const loadBooks = async () => {
     const sortedBooks = (await bookService.findAll()).sort((a, b) => {
-      return a.titulo.localeCompare(b.titulo); 
+      return a.titulo.localeCompare(b.titulo);
     });
     setBooks(sortedBooks);
   };

@@ -42,10 +42,6 @@ const RegisterBook: React.FC = () => {
       return `Ano de publicação deve ser entre 1500 e ${currentYear}.`;
     }
 
-    if (synopsis && synopsis.trim().length < 10) {
-      return 'Sinopse deve conter ao menos 10 caracteres, se preenchida.';
-    }
-
     return null;
   };
 

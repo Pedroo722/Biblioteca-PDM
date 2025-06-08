@@ -9,7 +9,7 @@ export class ClientRepository {
   }
 
   async create(client: Omit<Client, 'id'>): Promise<Client> {
-    const result = await this.db.runAsync(
+    const result = this.db.runSync(
       `INSERT INTO Clients (name, phone, email, password, address)
        VALUES (?, ?, ?, ?, ?)`,
       [client.name, client.phone, client.email, client.password, client.address]
@@ -19,12 +19,12 @@ export class ClientRepository {
   }
 
   async findAll(): Promise<Client[]> {
-    const result = await this.db.getAllAsync<Client>(`SELECT * FROM Clients`);
+    const result = this.db.getAllSync<Client>(`SELECT * FROM Clients`);
     return result;
   }
 
   async findById(id: number): Promise<Client | undefined> {
-    const result = await this.db.getFirstAsync<Client>(`SELECT * FROM Clients WHERE id = ?`, [id]);
+    const result = this.db.getFirstSync<Client>(`SELECT * FROM Clients WHERE id = ?`, [id]);
     return result ?? undefined;
   }
 
@@ -36,12 +36,12 @@ export class ClientRepository {
     const values = keys.map(key => (updatedClient as any)[key]);
     values.push(id);
 
-    const result = await this.db.runAsync(`UPDATE Clients SET ${fields} WHERE id = ?`, values);
+    const result = this.db.runSync(`UPDATE Clients SET ${fields} WHERE id = ?`, values);
     return result.changes > 0 ? { ...updatedClient, id } as Client : null;
   }
 
   async delete(id: number): Promise<boolean> {
-    const result = await this.db.runAsync(`DELETE FROM Clients WHERE id = ?`, [id]);
+    const result = this.db.runSync(`DELETE FROM Clients WHERE id = ?`, [id]);
     return result.changes > 0;
   }
 }

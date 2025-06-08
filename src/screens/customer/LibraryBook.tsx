@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Modal, ScrollView, TextInput } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Modal, ScrollView, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../../model/book/BookEntity';
 import { bookService } from '../../model/book/BookService';
+import { useFocusEffect } from '@react-navigation/native';
 
 const LibraryBook: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -12,14 +13,20 @@ const LibraryBook: React.FC = () => {
   const [searchAuthor, setSearchAuthor] = useState('');
 
   const loadBooks = async () => {
-    const books = await bookService.findAll();
-    const sortedBooks = books.sort((a, b) => a.titulo.localeCompare(b.titulo));
-    setBooks(sortedBooks);
+    try {
+      const books = await bookService.findAll();
+      const sortedBooks = books.sort((a, b) => a.titulo.localeCompare(b.titulo));
+      setBooks(sortedBooks);
+    } catch (error) {
+      Alert.alert('Erro', 'Erro ao carregar os livros. Tente novamente.');
+    }
   };
 
-  useEffect(() => {
-    loadBooks();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadBooks();
+    }, [])
+  );
 
   const filteredBooks = books.filter((book) =>
     book.titulo.toLowerCase().includes(searchTitle.toLowerCase()) &&
@@ -126,7 +133,6 @@ const LibraryBook: React.FC = () => {
 };
 
 export default LibraryBook;
-
 
 const styles = StyleSheet.create({
   container: {

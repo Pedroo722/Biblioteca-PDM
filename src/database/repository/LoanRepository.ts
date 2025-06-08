@@ -9,7 +9,7 @@ export class LoanRepository {
   }
 
   async create(loan: Omit<Loan, 'id'>): Promise<Loan> {
-    const result = await this.db.runAsync(
+    const result = this.db.runSync(
       `INSERT INTO Loans (title, name, email, fine, loanDate, returnDate, returnDateReal, status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
@@ -28,12 +28,12 @@ export class LoanRepository {
   }
 
   async findAll(): Promise<Loan[]> {
-    const result = await this.db.getAllAsync<Loan>(`SELECT * FROM Loans`);
+    const result = this.db.getAllSync<Loan>(`SELECT * FROM Loans`);
     return result;
   }
 
   async findById(id: number): Promise<Loan | undefined> {
-    const result = await this.db.getFirstAsync<Loan>(`SELECT * FROM Loans WHERE id = ?`, [id]);
+    const result = this.db.getFirstSync<Loan>(`SELECT * FROM Loans WHERE id = ?`, [id]);
     return result ?? undefined;
   }
 
@@ -45,12 +45,12 @@ export class LoanRepository {
     const values = keys.map(key => (updatedLoan as any)[key]);
     values.push(id);
 
-    const result = await this.db.runAsync(`UPDATE Loans SET ${fields} WHERE id = ?`, values);
+    const result = this.db.runSync(`UPDATE Loans SET ${fields} WHERE id = ?`, values);
     return result.changes > 0 ? { ...updatedLoan, id } as Loan : null;
   }
 
   async delete(id: number): Promise<boolean> {
-    const result = await this.db.runAsync(`DELETE FROM Loans WHERE id = ?`, [id]);
+    const result = this.db.runSync(`DELETE FROM Loans WHERE id = ?`, [id]);
     return result.changes > 0;
   }
 }

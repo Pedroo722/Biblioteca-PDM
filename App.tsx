@@ -66,8 +66,6 @@ const CustomDrawerContent = (props: any) => {
         icon={({ color, size }) => <Ionicons name="add-circle" size={size} color={color} />}
       />
       
-      
-      
     </DrawerContentScrollView>
   );
 };
@@ -80,7 +78,7 @@ const App: React.FC = () => {
   return (
     <NavigationContainer>
       <Drawer.Navigator
-        initialRouteName="Meus Livros"
+        initialRouteName="Biblioteca"
         drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
           headerStyle: {

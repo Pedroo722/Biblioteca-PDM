@@ -25,7 +25,7 @@ Directory structure:
 └── src/
       ├── database/
       │   ├── DataBaseManager.ts
-      │   ├── library_db.sql
+      │   ├── library.db
       │   └── repository/
       │       ├── BookRepository.ts
       │       ├── ClientRepository.ts

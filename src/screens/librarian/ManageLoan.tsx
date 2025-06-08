@@ -15,12 +15,14 @@ const ManageLoan: React.FC = () => {
   const [showLoaned, setShowLoaned] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
 
+  // Fetch loans data when the component mounts
+  const loadLoans = async () => {
+    const data = await loanService.findAll();
+    setLoans(data);
+  };
+
   useEffect(() => {
-    const fetchLoans = async () => {
-      const data = await loanService.findAll();
-      setLoans(data);
-    };
-    fetchLoans();
+    loadLoans(); // Initial load of loans
   }, []);
 
   const parseBRDate = (dateStr: string): Date | null => {
@@ -59,12 +61,12 @@ const ManageLoan: React.FC = () => {
       (today.getMonth() + 1).toString().padStart(2, '0')
     }/${today.getFullYear()}`;
 
-    const updated = loanService.update(id, {
+    const updated = await loanService.update(id, {
       status: 'Disponível',
       returnDateReal: formattedDate,
     });
 
-    if (await updated) {
+    if (updated) {
       const loan = await loanService.findById(id);
 
       if (loan) {
@@ -78,7 +80,7 @@ const ManageLoan: React.FC = () => {
         console.warn('Empréstimo não encontrado após atualização.');
       }
 
-      setLoans(await loanService.findAll());
+      loadLoans(); // Reload loans after the update
       Alert.alert('Sucesso', 'Empréstimo finalizado e livro disponível novamente!');
     } else {
       Alert.alert('Erro', 'Falha ao finalizar o empréstimo.');
@@ -93,11 +95,11 @@ const ManageLoan: React.FC = () => {
       return;
     }
 
-    const books = bookService.findAll();
-    const book = (await books).find((b: { titulo: string; }) => b.titulo === loan.title);
+    const books = await bookService.findAll();
+    const book = books.find((b: { titulo: string; }) => b.titulo === loan.title);
 
     if (book) {
-      const updatedBook = bookService.update(book.id, { status: 'Disponível' });
+      const updatedBook = await bookService.update(book.id, { status: 'Disponível' });
       if (!updatedBook) {
         console.warn('Falha ao atualizar o status do livro.');
       }
@@ -105,11 +107,10 @@ const ManageLoan: React.FC = () => {
       console.warn('Livro relacionado ao empréstimo não encontrado.');
     }
 
-    const removed = loanService.delete(id);
+    const removed = await loanService.delete(id);
 
-    if (await removed) {
-      const updatedLoans = loanService.findAll();
-      setLoans(await updatedLoans);
+    if (removed) {
+      loadLoans(); // Reload loans after deletion
       Alert.alert('Cancelado', 'Empréstimo removido e livro disponibilizado.');
     } else {
       Alert.alert('Erro', 'Falha ao remover o empréstimo.');
@@ -216,64 +217,69 @@ const ManageLoan: React.FC = () => {
           </View>
         ))}
       </ScrollView>
-        <Modal visible={bookModalVisible} transparent animationType="fade">
-          <View style={styles.modalOverlay}>
-            <View style={[styles.modalContainer, styles.centeredContent]}>
-              <View style={styles.modalHeader}>
-                <Text style={[styles.modalTitle, styles.centerText]}>
-                  {selectedLoan?.title}
-                </Text>
-                <TouchableOpacity onPress={() => setBookModalVisible(false)}>
-                  <Ionicons name="close" size={24} color="red" />
-                </TouchableOpacity>
-              </View>
 
-              <View style={styles.modalContentItem}>
-                <Text style={styles.labelBold}>Status:</Text>
-                <Text>{selectedLoan?.status}</Text>
-              </View>
+      {/* Book Modal */}
+      <Modal visible={bookModalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContainer, styles.centeredContent]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, styles.centerText]}>
+                {selectedLoan?.title}
+              </Text>
+              <TouchableOpacity onPress={() => setBookModalVisible(false)}>
+                <Ionicons name="close" size={24} color="red" />
+              </TouchableOpacity>
+            </View>
 
-              <View style={styles.modalContentItem}>
-                <Text style={styles.labelBold}>Data de empréstimo:</Text>
-                <Text>{selectedLoan?.loanDate}</Text>
-              </View>
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Status:</Text>
+              <Text>{selectedLoan?.status}</Text>
+            </View>
 
-              <View style={styles.modalContentItem}>
-                <Text style={styles.labelBold}>Data de retorno:</Text>
-                <Text>{selectedLoan?.returnDate}</Text>
-              </View>
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Data de empréstimo:</Text>
+              <Text>{selectedLoan?.loanDate}</Text>
+            </View>
+
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Data de retorno:</Text>
+              <Text>{selectedLoan?.returnDate}</Text>
             </View>
           </View>
-        </Modal>
-        <Modal visible={clientModalVisible} transparent animationType="fade">
-          <View style={styles.modalOverlay}>
-            <View style={[styles.modalContainer, styles.centeredContent]}>
-              <View style={styles.modalHeader}>
-                <Text style={[styles.modalTitle, styles.centerText]}>
-                  {selectedLoan?.name}
-                </Text>
-                <TouchableOpacity onPress={() => setClientModalVisible(false)}>
-                  <Ionicons name="close" size={24} color="red" />
-                </TouchableOpacity>
-              </View>
+        </View>
+      </Modal>
 
-              <View style={styles.modalContentItem}>
-                <Text style={styles.labelBold}>Email:</Text>
-                <Text>{selectedLoan?.email}</Text>
-              </View>
+      {/* Client Modal */}
+      <Modal visible={clientModalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContainer, styles.centeredContent]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, styles.centerText]}>
+                {selectedLoan?.name}
+              </Text>
+              <TouchableOpacity onPress={() => setClientModalVisible(false)}>
+                <Ionicons name="close" size={24} color="red" />
+              </TouchableOpacity>
+            </View>
 
-              <View style={styles.modalContentItem}>
-                <Text style={styles.labelBold}>Multa:</Text>
-                <Text>{selectedLoan ? calculateFine(selectedLoan.returnDate) : 'R$ 0,00'}</Text>
-              </View>
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Email:</Text>
+              <Text>{selectedLoan?.email}</Text>
+            </View>
+
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Multa:</Text>
+              <Text>{selectedLoan ? calculateFine(selectedLoan.returnDate) : 'R$ 0,00'}</Text>
             </View>
           </View>
-        </Modal>
-      </View>
-    );
-  };
+        </View>
+      </Modal>
+    </View>
+  );
+};
 
 export default ManageLoan;
+
 
 const styles = StyleSheet.create({
   container: {

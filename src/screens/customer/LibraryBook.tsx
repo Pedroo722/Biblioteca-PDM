@@ -11,19 +11,19 @@ const LibraryBook: React.FC = () => {
   const [searchTitle, setSearchTitle] = useState('');
   const [searchAuthor, setSearchAuthor] = useState('');
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      const books = await bookService.findAll();
-      const sortedBooks = books.sort((a, b) => a.titulo.localeCompare(b.titulo));
-      setBooks(sortedBooks);
-    };
+  const loadBooks = async () => {
+    const books = await bookService.findAll();
+    const sortedBooks = books.sort((a, b) => a.titulo.localeCompare(b.titulo));
+    setBooks(sortedBooks);
+  };
 
-    fetchBooks();
+  useEffect(() => {
+    loadBooks();
   }, []);
 
   const filteredBooks = books.filter((book) =>
-      book.titulo.toLowerCase().includes(searchTitle.toLowerCase()) &&
-      book.autor.toLowerCase().includes(searchAuthor.toLowerCase())
+    book.titulo.toLowerCase().includes(searchTitle.toLowerCase()) &&
+    book.autor.toLowerCase().includes(searchAuthor.toLowerCase())
   )
   .sort((a, b) => a.titulo.localeCompare(b.titulo));
 

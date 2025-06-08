@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import { clientService } from '../../model/client/ClientService';
@@ -10,6 +10,20 @@ const RegisterClient: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [address, setAddress] = useState('');
+  const [clients, setClients] = useState<Client[]>([]);
+
+  const loadClients = async () => {
+    try {
+      const data = await clientService.findAll();
+      setClients(data);
+    } catch (error) {
+      console.error('Erro ao carregar clientes:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadClients();
+  }, []);
 
   const validateClient = (): string | null => {
     if (!name.trim() || name.trim().length < 3 || /[^a-zA-ZÀ-ÿ\s]/.test(name)) {
@@ -33,7 +47,7 @@ const RegisterClient: React.FC = () => {
     return null;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const validationError = validateClient();
     if (validationError) {
       Alert.alert('Erro de validação', validationError);
@@ -49,9 +63,10 @@ const RegisterClient: React.FC = () => {
     };
 
     try {
-      clientService.create(newClient);
+      await clientService.create(newClient);
       Alert.alert('Sucesso', 'Cliente registrado com sucesso!');
       clearForm();
+      loadClients();
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível registrar o cliente.');
     }
@@ -179,5 +194,24 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 5,
+  },
+  clientList: {
+    marginTop: 30,
+    width: '90%',
+  },
+  clientListTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  clientItem: {
+    padding: 10,
+    backgroundColor: '#fff',
+    marginBottom: 10,
+    borderRadius: 5,
+    elevation: 2,
+  },
+  noClientsText: {
+    color: '#888',
   },
 });

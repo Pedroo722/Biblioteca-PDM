@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import { bookService } from '../../model/book/BookService';
@@ -11,6 +11,16 @@ const RegisterBook: React.FC = () => {
   const [isbn, setIsbn] = useState('');
   const [publicationYear, setPublicationYear] = useState('');
   const [synopsis, setSynopsis] = useState('');
+  const [books, setBooks] = useState<Book[]>([]);
+
+  const loadBooks = async () => {
+    const fetchedBooks = await bookService.findAll();
+    setBooks(fetchedBooks);
+  };
+
+  useEffect(() => {
+    loadBooks();
+  }, []);
 
   const validateBook = (): string | null => {
     if (title.trim().length < 1) {
@@ -39,7 +49,7 @@ const RegisterBook: React.FC = () => {
     return null;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const validationError = validateBook();
     if (validationError) {
       Alert.alert('Erro de validação', validationError);
@@ -57,9 +67,10 @@ const RegisterBook: React.FC = () => {
     };
 
     try {
-      bookService.create(newBook);
+      await bookService.create(newBook);
       Alert.alert('Sucesso', 'Livro registrado com sucesso!');
       clearForm();
+      loadBooks();
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível registrar o livro.');
     }
@@ -158,8 +169,6 @@ const RegisterBook: React.FC = () => {
   );
 };
 
-export default RegisterBook;
-
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -202,3 +211,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
 });
+
+export default RegisterBook;

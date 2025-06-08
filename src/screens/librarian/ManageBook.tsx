@@ -9,7 +9,6 @@ const ManageBook: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-
   const [searchTitle, setSearchTitle] = useState('');
   const [searchAuthor, setSearchAuthor] = useState('');
 
@@ -51,7 +50,7 @@ const ManageBook: React.FC = () => {
             onPress: () => {
               bookService.delete(selectedBook.id);
               loadBooks();
-              setSelectedBook(null); 
+              setSelectedBook(null);
             },
           },
         ]

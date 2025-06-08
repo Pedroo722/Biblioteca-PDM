@@ -28,31 +28,32 @@ const CreateLoan: React.FC = () => {
   const [openAuthor, setOpenAuthor] = useState(false);
   const [openClient, setOpenClient] = useState(false);
 
+  const loadBooksAndClients = async () => {
+    const allBooks = await bookService.findAll();
+    const disponiveis = allBooks.filter((b: Book) => b.status === 'Disponível');
+    setLivros(disponiveis);
+    setBookItems(
+      Array.from(new Set(disponiveis.map((b) => b.titulo))).map((titulo) => ({
+        label: titulo,
+        value: titulo,
+      }))
+    );
+
+    const allClients = await clientService.findAll();
+    const uniqueClients = Array.from(new Map(allClients.map((c) => [c.email, c])).values());
+
+    setClientes(uniqueClients);
+    setClientItems(
+      uniqueClients.map((cliente) => ({
+        label: cliente.email,
+        value: cliente.email,
+      }))
+    );
+  };
+
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        const allBooks = bookService.findAll();
-        const disponiveis = (await allBooks).filter((b: Book) => b.status === 'Disponível');
-        setLivros(disponiveis);
-        setBookItems(
-          Array.from(new Set(disponiveis.map((b) => b.titulo))).map((titulo) => ({
-            label: titulo,
-            value: titulo,
-          }))
-        );
-
-        const allClients = await clientService.findAll();
-        const uniqueClients = Array.from(new Map(allClients.map((c) => [c.email, c])).values());
-
-        setClientes(uniqueClients);
-        setClientItems(
-          uniqueClients.map((cliente) => ({
-            label: cliente.email,
-            value: cliente.email,
-          }))
-        );
-      };
-      fetchData();
+      loadBooksAndClients();
     }, [])
   );
 
@@ -113,31 +114,23 @@ const CreateLoan: React.FC = () => {
       status: 'Emprestado',
     };
 
-    loanService.create(newLoan);
-    bookService.update(bookToUpdate.id, { status: 'Emprestado' });
+    await loanService.create(newLoan);
+    await bookService.update(bookToUpdate.id, { status: 'Emprestado' });
 
     Alert.alert('Sucesso', `Livro "${selectedBook}" emprestado para ${selectedClient}`);
+
     setSelectedBook('');
     setSelectedAuthor('');
     setSelectedClient('');
     setReturnDate('');
     setAuthorItems([]);
-
-    const allBooks = bookService.findAll();
-    const disponiveis = (await allBooks).filter((b) => b.status === 'Disponível');
-    setLivros(disponiveis);
-    setBookItems(
-      Array.from(new Set(disponiveis.map((b) => b.titulo))).map((titulo) => ({
-        label: titulo,
-        value: titulo,
-      }))
-    );
+    
+    loadBooksAndClients();
   };
 
-  // Função para renderizar o componente quando a lista estiver vazia
   const renderEmptyList = () => (
     <Text style={{ textAlign: 'center', paddingVertical: 10, color: '#666' }}>
-      Não tem nada com esse nome
+      Não existe nada com esse nome
     </Text>
   );
 

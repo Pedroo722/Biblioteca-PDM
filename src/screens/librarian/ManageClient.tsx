@@ -10,10 +10,6 @@ const ManageClient: React.FC = () => {
   const [searchEmail, setSearchEmail] = useState('');
   const [clients, setClients] = useState<Client[]>([]);
 
-  useEffect(() => {
-    loadClients();
-  }, []);
-
   const loadClients = async () => {
     try {
       const allClients = await clientService.findAll();
@@ -23,7 +19,11 @@ const ManageClient: React.FC = () => {
       console.error('Erro ao carregar clientes:', error);
     }
   };
-  
+
+  useEffect(() => {
+    loadClients();
+  }, []);
+
   const filteredClients = clients.filter(client =>
     client.email.toLowerCase().includes(searchEmail.toLowerCase())
   );

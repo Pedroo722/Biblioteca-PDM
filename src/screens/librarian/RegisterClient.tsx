@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TextInput, Text, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, TextInput, Text, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { Button } from 'react-native-paper';
 import { clientService } from '../../model/client/ClientService';
 import { Client } from '../../model/client/ClientEntity';
@@ -81,81 +81,87 @@ const RegisterClient: React.FC = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.form}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Nome:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite seu nome:"
-            value={name}
-            onChangeText={setName}
-          />
-        </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <View style={styles.form}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Nome:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu nome:"
+              value={name}
+              onChangeText={setName}
+            />
+          </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Telefone:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite seu telefone:"
-            keyboardType="phone-pad"
-            value={phone}
-            onChangeText={setPhone}
-          />
-        </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Telefone:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu telefone:"
+              keyboardType="phone-pad"
+              value={phone}
+              onChangeText={setPhone}
+            />
+          </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite seu email:"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu email:"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+            />
+          </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Senha:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite sua senha:"
-            value={password}
-            onChangeText={setPassword}
-          />
-        </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Senha:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Digite sua senha:"
+              value={password}
+              onChangeText={setPassword}
+            />
+          </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Endereço:</Text>
-          <TextInput
-            style={[styles.input, styles.multilineInput]}
-            placeholder="Digite seu endereço:"
-            multiline
-            numberOfLines={4}
-            value={address}
-            onChangeText={setAddress}
-          />
-        </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Endereço:</Text>
+            <TextInput
+              style={[styles.input, styles.multilineInput]}
+              placeholder="Digite seu endereço:"
+              multiline
+              numberOfLines={4}
+              value={address}
+              onChangeText={setAddress}
+            />
+          </View>
 
-        <View style={styles.buttonRow}>
-          <Button
-            mode="contained"
-            onPress={handleSave}
-            style={styles.button}
-            buttonColor="#0D4F97"
-          >
-            Salvar
-          </Button>
+          <View style={styles.buttonRow}>
+            <Button
+              mode="contained"
+              onPress={handleSave}
+              style={styles.button}
+              buttonColor="#0D4F97"
+            >
+              Salvar
+            </Button>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
-export default RegisterClient;
-
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  scrollViewContainer: {
     flexGrow: 1,
     backgroundColor: '#95BFC5',
     justifyContent: 'center',
@@ -195,23 +201,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
   },
-  clientList: {
-    marginTop: 30,
-    width: '90%',
-  },
-  clientListTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  clientItem: {
-    padding: 10,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-    borderRadius: 5,
-    elevation: 2,
-  },
-  noClientsText: {
-    color: '#888',
-  },
 });
+
+export default RegisterClient;

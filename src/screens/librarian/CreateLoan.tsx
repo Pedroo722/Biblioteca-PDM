@@ -7,18 +7,15 @@ import { Book } from '../../model/book/BookEntity';
 import { clientService } from '../../model/client/ClientService';
 import { Client } from '../../model/client/ClientEntity';
 import { useFocusEffect } from '@react-navigation/native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const CreateLoan: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<string>('');
   const [selectedAuthor, setSelectedAuthor] = useState<string>('');
   const [selectedClient, setSelectedClient] = useState<string>('');
-  const [returnDate, setReturnDate] = useState<string>('');
   const [livros, setLivros] = useState<Book[]>([]);
   const [clientes, setClientes] = useState<Client[]>([]);
   const [autores, setAutores] = useState<string[]>([]);
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [bookItems, setBookItems] = useState<any[]>([]);
   const [authorItems, setAuthorItems] = useState<any[]>([]);
@@ -58,36 +55,8 @@ const CreateLoan: React.FC = () => {
   );
 
   const handleSubmit = async () => {
-    if (!selectedBook || !selectedAuthor || !selectedClient || !returnDate) {
+    if (!selectedBook || !selectedAuthor || !selectedClient) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-      return;
-    }
-
-    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-    const match = returnDate.match(dateRegex);
-    if (!match) {
-      Alert.alert('Erro', 'Data de devolução inválida. Use o formato dd/mm/aaaa.');
-      return;
-    }
-
-    const [_, day, month, year] = match;
-    const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    dateObj.setHours(0, 0, 0, 0);
-
-    if (
-      dateObj.getFullYear() !== parseInt(year) ||
-      dateObj.getMonth() !== parseInt(month) - 1 ||
-      dateObj.getDate() !== parseInt(day)
-    ) {
-      Alert.alert('Erro', 'Data de devolução inválida. Verifique se a data existe.');
-      return;
-    }
-
-    const todayDate = new Date();
-    todayDate.setHours(0, 0, 0, 0);
-
-    if (dateObj < todayDate) {
-      Alert.alert('Erro', 'A data de devolução não pode ser anterior à data atual.');
       return;
     }
 
@@ -101,7 +70,14 @@ const CreateLoan: React.FC = () => {
 
     const client = clientes.find((c) => c.email === selectedClient);
     const name = client ? client.name : 'Cliente desconhecido';
+
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
     const loanDate = todayDate.toLocaleDateString('pt-BR');
+
+    const returnDateObj = new Date(todayDate);
+    returnDateObj.setDate(returnDateObj.getDate() + 10);
+    const returnDate = returnDateObj.toLocaleDateString('pt-BR');
 
     const newLoan: Omit<Loan, 'id'> = {
       title: selectedBook,
@@ -122,11 +98,11 @@ const CreateLoan: React.FC = () => {
     setSelectedBook('');
     setSelectedAuthor('');
     setSelectedClient('');
-    setReturnDate('');
     setAuthorItems([]);
-    
+
     loadBooksAndClients();
   };
+
 
   const renderEmptyList = () => (
     <Text style={{ textAlign: 'center', paddingVertical: 10, color: '#666' }}>
@@ -204,28 +180,6 @@ const CreateLoan: React.FC = () => {
           zIndexInverse={2000}
           style={{ marginTop: 15 }}
         />
-
-        <Text style={styles.label}>Data Esperada de Retorno:</Text>
-        <TouchableOpacity
-          style={styles.input}
-          onPress={() => setShowDatePicker(true)}
-        >
-          <Text>{returnDate || 'Selecione a data'}</Text>
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            value={new Date()}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
-              if (selectedDate) {
-                const formatted = selectedDate.toLocaleDateString('pt-BR');
-                setReturnDate(formatted);
-              }
-            }}
-          />
-        )}
 
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Emprestar</Text>

@@ -1,56 +1,69 @@
-import * as SQLite from 'expo-sqlite';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Loan } from '../../model/loan/LoanEntity';
 
+const STORAGE_KEY = '@library_loans';
+
 export class LoanRepository {
-  private db: SQLite.SQLiteDatabase;
-
-  constructor() {
-    this.db = SQLite.openDatabaseSync('library.db');
-  }
-
-  async create(loan: Omit<Loan, 'id'>): Promise<Loan> {
-    const result = this.db.runSync(
-      `INSERT INTO Loans (title, name, email, fine, loanDate, returnDate, returnDateReal, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        loan.title,
-        loan.name,
-        loan.email,
-        loan.fine,
-        loan.loanDate,
-        loan.returnDate,
-        loan.returnDateReal,
-        loan.status,
-      ]
-    );
-    const id = result.lastInsertRowId!;
-    return { ...loan, id };
-  }
-
+  // Carrega todos os loans do AsyncStorage
   async findAll(): Promise<Loan[]> {
-    const result = this.db.getAllSync<Loan>(`SELECT * FROM Loans`);
-    return result;
+    try {
+      const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
+      if (jsonValue != null) {
+        return JSON.parse(jsonValue) as Loan[];
+      }
+      return [];
+    } catch (e) {
+      console.error('Erro ao carregar empréstimos:', e);
+      return [];
+    }
   }
 
+  // Salva todos os loans no AsyncStorage
+  private async saveAll(loans: Loan[]): Promise<void> {
+    try {
+      const jsonValue = JSON.stringify(loans);
+      await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
+    } catch (e) {
+      console.error('Erro ao salvar empréstimos:', e);
+    }
+  }
+
+  // Cria um novo empréstimo
+  async create(loan: Omit<Loan, 'id'>): Promise<Loan> {
+    const loans = await this.findAll();
+    // Define id incremental simples (exemplo)
+    const newId = loans.length > 0 ? Math.max(...loans.map(l => l.id ?? 0)) + 1 : 1;
+    const newLoan: Loan = { ...loan, id: newId };
+    loans.push(newLoan);
+    await this.saveAll(loans);
+    return newLoan;
+  }
+
+  // Busca empréstimo por id
   async findById(id: number): Promise<Loan | undefined> {
-    const result = this.db.getFirstSync<Loan>(`SELECT * FROM Loans WHERE id = ?`, [id]);
-    return result ?? undefined;
+    const loans = await this.findAll();
+    return loans.find(loan => loan.id === id);
   }
 
+  // Atualiza um empréstimo
   async update(id: number, updatedLoan: Partial<Loan>): Promise<Loan | null> {
-    const keys = Object.keys(updatedLoan);
-    if (keys.length === 0) return null;
+    const loans = await this.findAll();
+    const index = loans.findIndex(loan => loan.id === id);
+    if (index === -1) return null;
 
-    const fields = keys.map(key => `${key} = ?`).join(', ');
-    const values = keys.map(key => (updatedLoan as any)[key]);
-    values.push(id);
-
-    const result = this.db.runSync(`UPDATE Loans SET ${fields} WHERE id = ?`, values);
-    return result.changes > 0 ? { ...updatedLoan, id } as Loan : null;
+    loans[index] = { ...loans[index], ...updatedLoan };
+    await this.saveAll(loans);
+    return loans[index];
   }
 
+  // Deleta um empréstimo
   async delete(id: number): Promise<boolean> {
-    const result = this.db.runSync(`DELETE FROM Loans WHERE id = ?`, [id]);
-    return result.changes > 0;
+    let loans = await this.findAll();
+    const initialLength = loans.length;
+    loans = loans.filter(loan => loan.id !== id);
+    if (loans.length === initialLength) return false;
+
+    await this.saveAll(loans);
+    return true;
   }
 }

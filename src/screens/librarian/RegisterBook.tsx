@@ -1,83 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput, Text, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { Button } from 'react-native-paper';
-import { clientService } from '../../model/client/ClientService';
-import { Client } from '../../model/client/ClientEntity';
+import { bookService } from '../../model/book/BookService';
+import { Book } from '../../model/book/BookEntity';
 
-const RegisterClient: React.FC = () => {
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [address, setAddress] = useState('');
-  const [clients, setClients] = useState<Client[]>([]);
+const RegisterBook: React.FC = () => {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [publisher, setPublisher] = useState('');
+  const [isbn, setIsbn] = useState('');
+  const [publicationYear, setPublicationYear] = useState('');
+  const [synopsis, setSynopsis] = useState('');
 
-  const loadClients = async () => {
-    try {
-      const data = await clientService.findAll();
-      setClients(data);
-    } catch (error) {
-      console.error('Erro ao carregar clientes:', error);
-    }
-  };
-
-  useEffect(() => {
-    loadClients();
-  }, []);
-
-  const validateClient = (): string | null => {
-    if (!name.trim() || name.trim().length < 3 || /[^a-zA-ZÀ-ÿ\s]/.test(name)) {
-      return 'Nome deve ter ao menos 3 letras e não conter números ou símbolos.';
-    }
-
-    const phoneDigits = phone.replace(/\D/g, '');
-    if (phoneDigits.length < 10) {
-      return 'Telefone deve conter pelo menos 10 dígitos.';
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return 'Email inválido.';
-    }
-
-    if (address.trim().length < 10) {
-      return 'Endereço deve conter pelo menos 10 caracteres.';
-    }
-
+  const validateBook = (): string | null => {
+    if (title.trim().length < 1) return 'Título não pode ser vazio.';
+    if (author.trim().length < 3) return 'Autor deve ter ao menos 3 letras.';
+    if (isbn.replace(/\D/g, '').length !== 10) return 'ISBN deve ter exatamente 10 dígitos.';
+    const year = parseInt(publicationYear);
+    const currentYear = new Date().getFullYear();
+    if (isNaN(year) || year < 1500 || year > currentYear) return `Ano inválido. Deve ser entre 1500 e ${currentYear}.`;
     return null;
   };
 
   const handleSave = async () => {
-    const validationError = validateClient();
-    if (validationError) {
-      Alert.alert('Erro de validação', validationError);
+    const error = validateBook();
+    if (error) {
+      Alert.alert('Erro de validação', error);
       return;
     }
-
-    const newClient: Omit<Client, 'id'> = {
-      name,
-      phone,
-      email,
-      password,
-      address,
-    };
-
     try {
-      await clientService.create(newClient);
-      Alert.alert('Sucesso', 'Cliente registrado com sucesso!');
+      const newBook: Omit<Book, 'id'> = {
+        titulo: title,
+        autor: author,
+        editora: publisher,
+        isbn,
+        ano: publicationYear,
+        sinopse: synopsis,
+        status: 'Disponível',
+      };
+      await bookService.create(newBook);
+      Alert.alert('Sucesso', 'Livro registrado com sucesso!');
       clearForm();
-      loadClients();
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível registrar o cliente.');
+      Alert.alert('Erro', 'Não foi possível registrar o livro.');
     }
   };
 
   const clearForm = () => {
-    setName('');
-    setPhone('');
-    setEmail('');
-    setPassword('');
-    setAddress('');
+    setTitle('');
+    setAuthor('');
+    setPublisher('');
+    setIsbn('');
+    setPublicationYear('');
+    setSynopsis('');
   };
 
   return (
@@ -88,56 +63,68 @@ const RegisterClient: React.FC = () => {
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         <View style={styles.form}>
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nome:</Text>
+            <Text style={styles.label}>Título:</Text>
             <TextInput
               style={styles.input}
-              placeholder="Digite seu nome:"
-              value={name}
-              onChangeText={setName}
+              placeholder="Digite o título"
+              value={title}
+              onChangeText={setTitle}
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Telefone:</Text>
+            <Text style={styles.label}>Autor(a):</Text>
             <TextInput
               style={styles.input}
-              placeholder="Digite seu telefone:"
-              keyboardType="phone-pad"
-              value={phone}
-              onChangeText={setPhone}
+              placeholder="Digite o autor(a)"
+              value={author}
+              onChangeText={setAuthor}
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email:</Text>
+            <Text style={styles.label}>Editora:</Text>
             <TextInput
               style={styles.input}
-              placeholder="Digite seu email:"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
+              placeholder="Digite a editora"
+              value={publisher}
+              onChangeText={setPublisher}
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Senha:</Text>
+            <Text style={styles.label}>ISBN (10 dígitos):</Text>
             <TextInput
               style={styles.input}
-              placeholder="Digite sua senha:"
-              value={password}
-              onChangeText={setPassword}
+              placeholder="Digite o ISBN"
+              keyboardType="numeric"
+              maxLength={10}
+              value={isbn}
+              onChangeText={setIsbn}
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Endereço:</Text>
+            <Text style={styles.label}>Ano de Publicação:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Digite o ano"
+              keyboardType="numeric"
+              maxLength={4}
+              value={publicationYear}
+              onChangeText={setPublicationYear}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Sinopse:</Text>
             <TextInput
               style={[styles.input, styles.multilineInput]}
-              placeholder="Digite seu endereço:"
+              placeholder="Digite a sinopse"
               multiline
               numberOfLines={4}
-              value={address}
-              onChangeText={setAddress}
+              value={synopsis}
+              onChangeText={setSynopsis}
             />
           </View>
 
@@ -202,5 +189,4 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
 });
-
-export default RegisterClient;
+export default RegisterBook;

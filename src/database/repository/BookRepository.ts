@@ -1,48 +1,54 @@
-import * as SQLite from 'expo-sqlite';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Book } from '../../model/book/BookEntity';
 
+const STORAGE_KEY = 'books';
+
 export class BookRepository {
-    private db: SQLite.SQLiteDatabase;
-
-    constructor() {
-        this.db = SQLite.openDatabaseSync('library.db');
+    private async getAllBooks(): Promise<Book[]> {
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
     }
-    
-    async create(book: Omit<Book, 'id'>): Promise<Book> {
-        const result = this.db.runSync(
-            `INSERT INTO Books (titulo, autor, status, editora, isbn, ano, sinopse)
-        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [book.titulo, book.autor, book.status, book.editora, book.isbn, book.ano, book.sinopse]
-        );
 
-        const id = result.lastInsertRowId!;
-        return { ...book, id };
+    private async saveAllBooks(books: Book[]): Promise<void> {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+    }
+
+    async create(book: Omit<Book, 'id'>): Promise<Book> {
+        const books = await this.getAllBooks();
+        const id = books.length > 0 ? books[books.length - 1].id + 1 : 1;
+        const newBook: Book = { ...book, id };
+        books.push(newBook);
+        await this.saveAllBooks(books);
+        return newBook;
     }
 
     async findAll(): Promise<Book[]> {
-        const result = this.db.getAllSync<Book>(`SELECT * FROM Books`);
-        return result;
+        return this.getAllBooks();
     }
 
     async findById(id: number): Promise<Book | undefined> {
-        const result = this.db.getFirstSync<Book>(`SELECT * FROM Books WHERE id = ?`, [id]);
-        return result ?? undefined;
+        const books = await this.getAllBooks();
+        return books.find(book => book.id === id);
     }
 
     async update(id: number, updatedBook: Partial<Book>): Promise<Book | null> {
-        const keys = Object.keys(updatedBook);
-        if (keys.length === 0) return null;
+        const books = await this.getAllBooks();
+        const index = books.findIndex(b => b.id === id);
+        if (index === -1) return null;
 
-        const fields = keys.map(key => `${key} = ?`).join(', ');
-        const values = keys.map(key => (updatedBook as any)[key]);
-        values.push(id);
-
-        const result = this.db.runSync(`UPDATE Books SET ${fields} WHERE id = ?`, values);
-        return result.changes > 0 ? { ...updatedBook, id } as Book : null;
+        const updated = { ...books[index], ...updatedBook };
+        books[index] = updated;
+        await this.saveAllBooks(books);
+        return updated;
     }
 
     async delete(id: number): Promise<boolean> {
-        const result = this.db.runSync(`DELETE FROM Books WHERE id = ?`, [id]);
-        return result.changes > 0;
+        const books = await this.getAllBooks();
+        const filtered = books.filter(book => book.id !== id);
+        const deleted = filtered.length !== books.length;
+        if (deleted) {
+            await this.saveAllBooks(filtered);
+        }
+        return deleted;
     }
 }

@@ -1,47 +1,59 @@
-import * as SQLite from 'expo-sqlite';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Client } from '../../model/client/ClientEntity';
 
-export class ClientRepository {
-  private db: SQLite.SQLiteDatabase;
+const STORAGE_KEY = 'clients';
 
-  constructor() {
-    this.db = SQLite.openDatabaseSync('library.db');
+export class ClientRepository {
+  private async getStoredClients(): Promise<Client[]> {
+    const data = await AsyncStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  }
+
+  private async saveClients(clients: Client[]): Promise<void> {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
   }
 
   async create(client: Omit<Client, 'id'>): Promise<Client> {
-    const result = this.db.runSync(
-      `INSERT INTO Clients (name, phone, email, password, address)
-       VALUES (?, ?, ?, ?, ?)`,
-      [client.name, client.phone, client.email, client.password, client.address]
-    );
-    const id = result.lastInsertRowId!;
-    return { ...client, id };
+    const clients = await this.getStoredClients();
+    const newClient: Client = {
+      ...client,
+      id: clients.length > 0 ? clients[clients.length - 1].id + 1 : 1,
+    };
+    clients.push(newClient);
+    await this.saveClients(clients);
+    return newClient;
   }
 
   async findAll(): Promise<Client[]> {
-    const result = this.db.getAllSync<Client>(`SELECT * FROM Clients`);
-    return result;
+    return await this.getStoredClients();
   }
 
   async findById(id: number): Promise<Client | undefined> {
-    const result = this.db.getFirstSync<Client>(`SELECT * FROM Clients WHERE id = ?`, [id]);
-    return result ?? undefined;
+    const clients = await this.getStoredClients();
+    return clients.find(c => c.id === id);
   }
 
   async update(id: number, updatedClient: Partial<Client>): Promise<Client | null> {
-    const keys = Object.keys(updatedClient);
-    if (keys.length === 0) return null;
+    const clients = await this.getStoredClients();
+    const index = clients.findIndex(c => c.id === id);
+    if (index === -1) return null;
 
-    const fields = keys.map(key => `${key} = ?`).join(', ');
-    const values = keys.map(key => (updatedClient as any)[key]);
-    values.push(id);
-
-    const result = this.db.runSync(`UPDATE Clients SET ${fields} WHERE id = ?`, values);
-    return result.changes > 0 ? { ...updatedClient, id } as Client : null;
+    clients[index] = { ...clients[index], ...updatedClient };
+    await this.saveClients(clients);
+    return clients[index];
   }
 
   async delete(id: number): Promise<boolean> {
-    const result = this.db.runSync(`DELETE FROM Clients WHERE id = ?`, [id]);
-    return result.changes > 0;
+    const clients = await this.getStoredClients();
+    const newClients = clients.filter(c => c.id !== id);
+    const changed = newClients.length !== clients.length;
+    if (changed) {
+      await this.saveClients(newClients);
+    }
+    return changed;
+  }
+
+  async clearAll(): Promise<void> {
+    await AsyncStorage.removeItem(STORAGE_KEY);
   }
 }

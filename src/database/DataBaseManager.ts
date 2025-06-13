@@ -1,55 +1,115 @@
-import * as SQLite from 'expo-sqlite';
+// src/database/AsyncStorageRepositories.ts
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Book } from '../model/book/BookEntity';
+import { Client } from '../model/client/ClientEntity';
+import { Loan } from '../model/loan/LoanEntity';
 
-const openDatabase = () => {
-  const db = SQLite.openDatabaseSync('library.db');
-  return db;
+// Keys para AsyncStorage
+const BOOKS_KEY = '@books';
+const CLIENTS_KEY = '@clients';
+const LOANS_KEY = '@loans';
+
+// --- Books ---
+
+export const saveBooks = async (books: Book[]) => {
+  await AsyncStorage.setItem(BOOKS_KEY, JSON.stringify(books));
 };
 
-const createTables = (db: SQLite.SQLiteDatabase) => {
-  const createBooksTable = `
-    CREATE TABLE IF NOT EXISTS Books (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      titulo TEXT NOT NULL,
-      autor TEXT NOT NULL,
-      status TEXT NOT NULL,
-      editora TEXT NOT NULL,
-      isbn TEXT NOT NULL,
-      ano TEXT NOT NULL,
-      sinopse TEXT
-    );
-  `;
-
-  const createClientsTable = `
-    CREATE TABLE IF NOT EXISTS Clients (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      phone TEXT NOT NULL,
-      email TEXT NOT NULL,
-      password TEXT NOT NULL,
-      address TEXT NOT NULL
-    );
-  `;
-
-  const createLoansTable = `
-    CREATE TABLE IF NOT EXISTS Loans (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT NOT NULL,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL,
-      fine TEXT,
-      loanDate TEXT NOT NULL,
-      returnDate TEXT NOT NULL,
-      returnDateReal TEXT,
-      status TEXT NOT NULL
-    );
-  `;
-
-  db.execSync(createBooksTable);
-  db.execSync(createClientsTable);
-  db.execSync(createLoansTable);
+export const loadBooks = async (): Promise<Book[]> => {
+  const json = await AsyncStorage.getItem(BOOKS_KEY);
+  return json ? JSON.parse(json) : [];
 };
 
-export const loadDatabase = () => {
-  const db = openDatabase();
-  createTables(db);
+export const addBook = async (book: Book) => {
+  const books = await loadBooks();
+  books.push(book);
+  await saveBooks(books);
+};
+
+export const updateBook = async (updatedBook: Book) => {
+  const books = await loadBooks();
+  const index = books.findIndex(b => b.id === updatedBook.id);
+  if (index >= 0) {
+    books[index] = updatedBook;
+    await saveBooks(books);
+  }
+};
+
+export const deleteBook = async (id: number) => {
+  let books = await loadBooks();
+  books = books.filter(b => b.id !== id);
+  await saveBooks(books);
+};
+
+// --- Clients ---
+
+export const saveClients = async (clients: Client[]) => {
+  await AsyncStorage.setItem(CLIENTS_KEY, JSON.stringify(clients));
+};
+
+export const loadClients = async (): Promise<Client[]> => {
+  const json = await AsyncStorage.getItem(CLIENTS_KEY);
+  return json ? JSON.parse(json) : [];
+};
+
+export const addClient = async (client: Client) => {
+  const clients = await loadClients();
+  clients.push(client);
+  await saveClients(clients);
+};
+
+export const updateClient = async (updatedClient: Client) => {
+  const clients = await loadClients();
+  const index = clients.findIndex(c => c.id === updatedClient.id);
+  if (index >= 0) {
+    clients[index] = updatedClient;
+    await saveClients(clients);
+  }
+};
+
+export const deleteClient = async (id: number) => {
+  let clients = await loadClients();
+  clients = clients.filter(c => c.id !== id);
+  await saveClients(clients);
+};
+
+// --- Loans ---
+
+export const saveLoans = async (loans: Loan[]) => {
+  await AsyncStorage.setItem(LOANS_KEY, JSON.stringify(loans));
+};
+
+export const loadLoans = async (): Promise<Loan[]> => {
+  const json = await AsyncStorage.getItem(LOANS_KEY);
+  return json ? JSON.parse(json) : [];
+};
+
+export const addLoan = async (loan: Loan) => {
+  const loans = await loadLoans();
+  loans.push(loan);
+  await saveLoans(loans);
+};
+
+export const updateLoan = async (updatedLoan: Loan) => {
+  const loans = await loadLoans();
+  const index = loans.findIndex(l => l.id === updatedLoan.id);
+  if (index >= 0) {
+    loans[index] = updatedLoan;
+    await saveLoans(loans);
+  }
+};
+
+export const deleteLoan = async (id: number) => {
+  let loans = await loadLoans();
+  loans = loans.filter(l => l.id !== id);
+  await saveLoans(loans);
+};
+
+// --- Load all data ---
+
+export const loadDatabase = async () => {
+  const books = await loadBooks();
+  const clients = await loadClients();
+  const loans = await loadLoans();
+  return { books, clients, loans };
 };

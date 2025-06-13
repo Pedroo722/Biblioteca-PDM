@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem,
+} from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 
 import AccountBooks from './src/screens/customer/AccountBook';
@@ -14,6 +18,10 @@ import RegisterBook from './src/screens/librarian/RegisterBook';
 import RegisterClients from './src/screens/librarian/RegisterClient';
 
 import { loadDatabase } from './src/database/DataBaseManager';
+
+import { BookProvider } from './src/context/BookContext';
+import { ClientProvider } from './src/context/ClientContext';
+import { LoanProvider } from './src/context/LoanContext';
 
 const Drawer = createDrawerNavigator();
 
@@ -65,7 +73,6 @@ const CustomDrawerContent = (props: any) => {
         onPress={() => props.navigation.navigate('Criar Empréstimo')}
         icon={({ color, size }) => <Ionicons name="add-circle" size={size} color={color} />}
       />
-      
     </DrawerContentScrollView>
   );
 };
@@ -76,37 +83,41 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <NavigationContainer>
-      <Drawer.Navigator
-        initialRouteName="Biblioteca"
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#4dd0ff',
-          },
-          headerTitleStyle: {
-            fontSize: 20,
-            fontWeight: 'bold',
-            color: 'black',
-            textAlign: 'center',
-            alignSelf: 'center',
-          },
-          headerTintColor: 'black',
-          headerTitleAlign: 'center',
-          drawerActiveTintColor: '#0D4F97',
-          drawerInactiveTintColor: 'gray',
-        }}
-      >
-        <Drawer.Screen name="Meus Livros" component={AccountBooks} />
-        <Drawer.Screen name="Biblioteca" component={LibraryBooks} />
-        <Drawer.Screen name="Criar Empréstimo" component={CreateLoan} />
-        <Drawer.Screen name="Gerenciar Livros" component={ManageBooks} />
-        <Drawer.Screen name="Gerenciar Clientes" component={ManageClients} />
-        <Drawer.Screen name="Gerenciar Empréstimos" component={ManageLoans} />
-        <Drawer.Screen name="Cadastrar Livro" component={RegisterBook} />
-        <Drawer.Screen name="Cadastrar Cliente" component={RegisterClients} />
-      </Drawer.Navigator>
-    </NavigationContainer>
+    <BookProvider>
+      <ClientProvider>
+        <LoanProvider>
+          <NavigationContainer>
+            <Drawer.Navigator
+              initialRouteName="Biblioteca"
+              drawerContent={(props) => <CustomDrawerContent {...props} />}
+              screenOptions={{
+                headerStyle: { backgroundColor: '#4dd0ff' },
+                headerTitleStyle: {
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  color: 'black',
+                  textAlign: 'center',
+                  alignSelf: 'center',
+                },
+                headerTintColor: 'black',
+                headerTitleAlign: 'center',
+                drawerActiveTintColor: '#0D4F97',
+                drawerInactiveTintColor: 'gray',
+              }}
+            >
+              <Drawer.Screen name="Meus Livros" component={AccountBooks} />
+              <Drawer.Screen name="Biblioteca" component={LibraryBooks} />
+              <Drawer.Screen name="Criar Empréstimo" component={CreateLoan} />
+              <Drawer.Screen name="Gerenciar Livros" component={ManageBooks} />
+              <Drawer.Screen name="Gerenciar Clientes" component={ManageClients} />
+              <Drawer.Screen name="Gerenciar Empréstimos" component={ManageLoans} />
+              <Drawer.Screen name="Cadastrar Livro" component={RegisterBook} />
+              <Drawer.Screen name="Cadastrar Cliente" component={RegisterClients} />
+            </Drawer.Navigator>
+          </NavigationContainer>
+        </LoanProvider>
+      </ClientProvider>
+    </BookProvider>
   );
 };
 

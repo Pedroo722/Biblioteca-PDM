@@ -1,4 +1,3 @@
-// src/database/AsyncStorageRepositories.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Book } from '../model/book/BookEntity';
 import { Client } from '../model/client/ClientEntity';
@@ -105,7 +104,7 @@ export const deleteLoan = async (id: number) => {
   await saveLoans(loans);
 };
 
-// --- Load all data ---
+// --- Carregar Database ---
 
 export const loadDatabase = async () => {
   const books = await loadBooks();

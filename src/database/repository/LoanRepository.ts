@@ -4,7 +4,6 @@ import { Loan } from '../../model/loan/LoanEntity';
 const STORAGE_KEY = '@library_loans';
 
 export class LoanRepository {
-  // Carrega todos os loans do AsyncStorage
   async findAll(): Promise<Loan[]> {
     try {
       const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
@@ -18,7 +17,6 @@ export class LoanRepository {
     }
   }
 
-  // Salva todos os loans no AsyncStorage
   private async saveAll(loans: Loan[]): Promise<void> {
     try {
       const jsonValue = JSON.stringify(loans);
@@ -28,10 +26,8 @@ export class LoanRepository {
     }
   }
 
-  // Cria um novo empréstimo
   async create(loan: Omit<Loan, 'id'>): Promise<Loan> {
     const loans = await this.findAll();
-    // Define id incremental simples (exemplo)
     const newId = loans.length > 0 ? Math.max(...loans.map(l => l.id ?? 0)) + 1 : 1;
     const newLoan: Loan = { ...loan, id: newId };
     loans.push(newLoan);
@@ -39,13 +35,11 @@ export class LoanRepository {
     return newLoan;
   }
 
-  // Busca empréstimo por id
   async findById(id: number): Promise<Loan | undefined> {
     const loans = await this.findAll();
     return loans.find(loan => loan.id === id);
   }
 
-  // Atualiza um empréstimo
   async update(id: number, updatedLoan: Partial<Loan>): Promise<Loan | null> {
     const loans = await this.findAll();
     const index = loans.findIndex(loan => loan.id === id);
@@ -56,7 +50,6 @@ export class LoanRepository {
     return loans[index];
   }
 
-  // Deleta um empréstimo
   async delete(id: number): Promise<boolean> {
     let loans = await this.findAll();
     const initialLength = loans.length;

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Text, Modal, TouchableOpacity, TextInput, ScrollView, Switch, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Loan } from '../../model/loan/LoanEntity';
 import { loanService } from '../../model/loan/LoanService';
 import { bookService } from '../../model/book/BookService';
+import { useFocusEffect } from '@react-navigation/native'; // Importação adicionada
 
 const ManageLoan: React.FC = () => {
   const [loans, setLoans] = useState<Loan[]>([]);
@@ -20,9 +21,12 @@ const ManageLoan: React.FC = () => {
     setLoans(data);
   };
 
-  useEffect(() => {
-    loadLoans();
-  }, []);
+  // Substitui o useEffect pelo useFocusEffect para recarregar ao focar na tela
+  useFocusEffect(
+    useCallback(() => {
+      loadLoans();
+    }, [])
+  );
 
   const parseBRDate = (dateStr: string): Date | null => {
     if (!dateStr) return null;
@@ -244,6 +248,11 @@ const ManageLoan: React.FC = () => {
               <Text style={styles.labelBold}>Data de retorno:</Text>
               <Text>{selectedLoan?.returnDate}</Text>
             </View>
+
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Data de retorno real:</Text>
+              <Text>{selectedLoan?.returnDateReal}</Text>
+            </View>
           </View>
         </View>
       </Modal>
@@ -254,7 +263,7 @@ const ManageLoan: React.FC = () => {
           <View style={[styles.modalContainer, styles.centeredContent]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, styles.centerText]}>
-                {selectedLoan?.name}
+                {selectedLoan?.email}
               </Text>
               <TouchableOpacity onPress={() => setClientModalVisible(false)}>
                 <Ionicons name="close" size={24} color="red" />
@@ -262,13 +271,23 @@ const ManageLoan: React.FC = () => {
             </View>
 
             <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Email:</Text>
-              <Text>{selectedLoan?.email}</Text>
+              <Text style={styles.labelBold}>Status:</Text>
+              <Text>{selectedLoan?.status}</Text>
             </View>
 
             <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Multa:</Text>
-              <Text>{selectedLoan ? calculateFine(selectedLoan.returnDate) : 'R$ 0,00'}</Text>
+              <Text style={styles.labelBold}>Data de empréstimo:</Text>
+              <Text>{selectedLoan?.loanDate}</Text>
+            </View>
+
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Data de retorno:</Text>
+              <Text>{selectedLoan?.returnDate}</Text>
+            </View>
+
+            <View style={styles.modalContentItem}>
+              <Text style={styles.labelBold}>Data de retorno real:</Text>
+              <Text>{selectedLoan?.returnDateReal}</Text>
             </View>
           </View>
         </View>
@@ -278,7 +297,6 @@ const ManageLoan: React.FC = () => {
 };
 
 export default ManageLoan;
-
 
 const styles = StyleSheet.create({
   container: {
@@ -320,6 +338,16 @@ const styles = StyleSheet.create({
   labelRed: {
     color: 'red',
     fontWeight: 'bold',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 2,
+  },
+  labelBold: {
+    fontWeight: 'bold',
+    fontSize: 14,
+    textAlign: 'center',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -368,29 +396,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 10,
   },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 2,
-  },
-  synopsisLabel: {
-    marginTop: 10,
-    fontWeight: 'bold',
-  },
-  labelBold: {
-    fontWeight: 'bold',
-    fontSize: 14,
-    textAlign: 'center',
-  },
   centeredContent: {
     alignItems: 'center',
   },
   modalContentItem: {
     marginVertical: 5,
-    alignItems: 'center',
-  },
-  infoRow: {
-    flexDirection: 'row',
     alignItems: 'center',
   },
 });

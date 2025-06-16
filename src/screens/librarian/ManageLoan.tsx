@@ -280,11 +280,6 @@ const ManageLoan: React.FC = () => {
         </View>
 
         <View style={styles.modalContentItem}>
-            <Text style={styles.labelBold}>Telefone:</Text>
-            <Text>{selectedLoan?.phone}</Text>
-        </View>
-
-        <View style={styles.modalContentItem}>
             <Text style={styles.labelBold}>Multa:</Text>
             <Text>{calculateFine(selectedLoan?.returnDate || '')}</Text>
         </View>

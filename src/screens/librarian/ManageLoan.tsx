@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Loan } from '../../model/loan/LoanEntity';
 import { loanService } from '../../model/loan/LoanService';
 import { bookService } from '../../model/book/BookService';
-import { useFocusEffect } from '@react-navigation/native'; // Importação adicionada
+import { useFocusEffect } from '@react-navigation/native';
 
 const ManageLoan: React.FC = () => {
   const [loans, setLoans] = useState<Loan[]>([]);
@@ -21,7 +21,6 @@ const ManageLoan: React.FC = () => {
     setLoans(data);
   };
 
-  // Substitui o useEffect pelo useFocusEffect para recarregar ao focar na tela
   useFocusEffect(
     useCallback(() => {
       loadLoans();
@@ -260,38 +259,39 @@ const ManageLoan: React.FC = () => {
       {/* Client Modal */}
       <Modal visible={clientModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContainer, styles.centeredContent]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, styles.centerText]}>
-                {selectedLoan?.email}
-              </Text>
-              <TouchableOpacity onPress={() => setClientModalVisible(false)}>
-                <Ionicons name="close" size={24} color="red" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Status:</Text>
-              <Text>{selectedLoan?.status}</Text>
-            </View>
-
-            <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Data de empréstimo:</Text>
-              <Text>{selectedLoan?.loanDate}</Text>
-            </View>
-
-            <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Data de retorno:</Text>
-              <Text>{selectedLoan?.returnDate}</Text>
-            </View>
-
-            <View style={styles.modalContentItem}>
-              <Text style={styles.labelBold}>Data de retorno real:</Text>
-              <Text>{selectedLoan?.returnDateReal}</Text>
-            </View>
-          </View>
+        <View style={[styles.modalContainer, styles.centeredContent]}>
+        <View style={styles.modalHeader}>
+            <Text style={[styles.modalTitle, styles.centerText]}>
+            {selectedLoan?.name}
+            </Text>
+            <TouchableOpacity onPress={() => setClientModalVisible(false)}>
+            <Ionicons name="close" size={24} color="red" />
+            </TouchableOpacity>
         </View>
-      </Modal>
+
+        <View style={styles.modalContentItem}>
+            <Text style={styles.labelBold}>Nome do Cliente:</Text>
+            <Text>{selectedLoan?.name}</Text>
+        </View>
+
+        <View style={styles.modalContentItem}>
+            <Text style={styles.labelBold}>Email:</Text>
+            <Text>{selectedLoan?.email}</Text>
+        </View>
+
+        <View style={styles.modalContentItem}>
+            <Text style={styles.labelBold}>Telefone:</Text>
+            <Text>{selectedLoan?.phone}</Text>
+        </View>
+
+        <View style={styles.modalContentItem}>
+            <Text style={styles.labelBold}>Multa:</Text>
+            <Text>{calculateFine(selectedLoan?.returnDate || '')}</Text>
+        </View>
+        </View>
+    </View>
+    </Modal>
+
     </View>
   );
 };

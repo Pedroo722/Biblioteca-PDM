@@ -8,6 +8,8 @@ import {
 } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 
+import LoginScreen from './src/screens/LoginScreen';
+
 import AccountBooks from './src/screens/customer/AccountBook';
 import LibraryBooks from './src/screens/customer/LibraryBook';
 import CreateLoan from './src/screens/librarian/CreateLoan';
@@ -88,7 +90,7 @@ const App: React.FC = () => {
         <LoanProvider>
           <NavigationContainer>
             <Drawer.Navigator
-              initialRouteName="Biblioteca"
+              initialRouteName="Login"
               drawerContent={(props) => <CustomDrawerContent {...props} />}
               screenOptions={{
                 headerStyle: { backgroundColor: '#4dd0ff' },
@@ -105,6 +107,7 @@ const App: React.FC = () => {
                 drawerInactiveTintColor: 'gray',
               }}
             >
+              <Drawer.Screen name="Login" component={LoginScreen} />
               <Drawer.Screen name="Meus Livros" component={AccountBooks} />
               <Drawer.Screen name="Biblioteca" component={LibraryBooks} />
               <Drawer.Screen name="Criar Empréstimo" component={CreateLoan} />

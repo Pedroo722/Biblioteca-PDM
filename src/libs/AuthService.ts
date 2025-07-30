@@ -1,26 +1,31 @@
-const API_URL = 'http://localhost:8081/auth';
+const API_URL = 'http://192.168.0.108:8081/auth';
 
 interface LoginResponse {
   message: string;
   jwtToken: string | null;
+  role: string | null;
 }
 
 export const login = async (email: string, password: string) => {
+  const requestData = { email, password };
+
+  console.log("Request sent to /login:", requestData);
+
   try {
     const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(requestData),
     });
 
     const data: LoginResponse = await response.json();
-    
+
     console.log("DADOS RECEBIDOS: ", data);
 
     if (response.ok && data.jwtToken) {
-      return { success: true, jwtToken: data.jwtToken };
+      return { success: true, jwtToken: data.jwtToken, role: data.role };
     } else {
       console.error("Erro no login: ", data.message);
       return { success: false, message: data.message };

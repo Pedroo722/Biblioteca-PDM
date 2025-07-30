@@ -22,7 +22,15 @@ const LoginScreen: React.FC = () => {
     const response = await login(email, password);
     if (response.success) {
       await AsyncStorage.setItem('authToken', response.jwtToken || '');
-      navigation.navigate(response.jwtToken ? 'AccountBook' : 'ManageBook');
+      
+      await AsyncStorage.setItem('authToken', response.jwtToken || '');
+      await AsyncStorage.setItem('userRole', response.role || '');
+
+      if (response.role === 'ADMIN') {
+        navigation.navigate('Gerenciar Livros');
+      } else {
+        navigation.navigate('Meus Livros');
+      }
     } else {
       Alert.alert('Login Failed', response.message || 'Unknown error');
     }

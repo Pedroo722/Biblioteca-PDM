@@ -1,5 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 import { Book } from '../../model/book/BookEntity';
+import { authFetch } from '../../libs/ApiService';
+import { SyncQueue } from '../../libs/SyncQueue';
 
 const STORAGE_KEY = 'books';
 
@@ -17,8 +20,43 @@ export class BookRepository {
         const books = await this.getAllBooks();
         const id = books.length > 0 ? books[books.length - 1].id + 1 : 1;
         const newBook: Book = { ...book, id };
+
         books.push(newBook);
         await this.saveAllBooks(books);
+
+        const isConnected = await NetInfo.fetch().then(res => res.isConnected);
+        const body = new URLSearchParams({
+            titulo: newBook.titulo,
+            autor: newBook.autor,
+            status: newBook.status,
+            editora: newBook.editora,
+            isbn: newBook.isbn,
+            ano: newBook.ano,
+            sinopse: newBook.sinopse
+        });
+
+        if (isConnected) {
+            await authFetch('/books/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: body.toString(),
+            }).catch(() => {
+                SyncQueue.addRequest({
+                    method: 'POST',
+                    endpoint: '/books/create',
+                    body: body.toString(),
+                });
+            });
+        } else {
+            await SyncQueue.addRequest({
+                method: 'POST',
+                endpoint: '/books/create',
+                body: body.toString(),
+            });
+        }
+
         return newBook;
     }
 
@@ -39,6 +77,40 @@ export class BookRepository {
         const updated = { ...books[index], ...updatedBook };
         books[index] = updated;
         await this.saveAllBooks(books);
+
+        const isConnected = await NetInfo.fetch().then(res => res.isConnected);
+        const body = new URLSearchParams({
+            titulo: updated.titulo,
+            autor: updated.autor,
+            status: updated.status,
+            editora: updated.editora,
+            isbn: updated.isbn,
+            ano: updated.ano,
+            sinopse: updated.sinopse
+        });
+
+        if (isConnected) {
+            await authFetch(`/books/update/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: body.toString(),
+            }).catch(() => {
+                SyncQueue.addRequest({
+                    method: 'PUT',
+                    endpoint: `/books/update/${id}`,
+                    body: body.toString(),
+                });
+            });
+        } else {
+            await SyncQueue.addRequest({
+                method: 'PUT',
+                endpoint: `/books/update/${id}`,
+                body: body.toString(),
+            });
+        }
+
         return updated;
     }
 
@@ -48,6 +120,23 @@ export class BookRepository {
         const deleted = filtered.length !== books.length;
         if (deleted) {
             await this.saveAllBooks(filtered);
+
+            const isConnected = await NetInfo.fetch().then(res => res.isConnected);
+            if (isConnected) {
+                await authFetch(`/books/delete/${id}`, {
+                    method: 'DELETE',
+                }).catch(() => {
+                    SyncQueue.addRequest({
+                        method: 'DELETE',
+                        endpoint: `/books/delete/${id}`,
+                    });
+                });
+            } else {
+                await SyncQueue.addRequest({
+                    method: 'DELETE',
+                    endpoint: `/books/delete/${id}`,
+                });
+            }
         }
         return deleted;
     }

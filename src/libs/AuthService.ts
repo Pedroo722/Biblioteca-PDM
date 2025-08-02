@@ -1,3 +1,5 @@
+import { TokenService } from './TokenService';
+
 const API_URL = 'http://192.168.0.108:8081/auth';
 
 interface LoginResponse {
@@ -25,6 +27,7 @@ export const login = async (email: string, password: string) => {
     console.log("DADOS RECEBIDOS: ", data);
 
     if (response.ok && data.jwtToken) {
+      await TokenService.saveToken(data.jwtToken);
       return { success: true, jwtToken: data.jwtToken, role: data.role };
     } else {
       console.error("Erro no login: ", data.message);

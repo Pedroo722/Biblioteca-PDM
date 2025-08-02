@@ -7,6 +7,9 @@ import {
   DrawerItem,
 } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 import LoginScreen from './src/screens/LoginScreen';
 
@@ -28,53 +31,77 @@ import { LoanProvider } from './src/context/LoanContext';
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = (props: any) => {
+  const [role, setRole] = React.useState<string | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchRole = async () => {
+        const storedRole = await AsyncStorage.getItem('userRole');
+        setRole(storedRole);
+      };
+      fetchRole();
+    }, [])
+  );
+
+  if (role === null) {
+    return null;
+  }
+
   return (
     <DrawerContentScrollView {...props}>
-      <Text style={styles.sectionTitle}>Cliente</Text>
-      <DrawerItem
-        label="Meus Livros"
-        onPress={() => props.navigation.navigate('Meus Livros')}
-        icon={({ color, size }) => <Ionicons name="book" size={size} color={color} />}
-      />
-      <DrawerItem
-        label="Biblioteca"
-        onPress={() => props.navigation.navigate('Biblioteca')}
-        icon={({ color, size }) => <Ionicons name="library" size={size} color={color} />}
-      />
+      {role !== 'ADMIN' && (
+        <>
+          <Text style={styles.sectionTitle}>Cliente</Text>
+          <DrawerItem
+            label="Meus Livros"
+            onPress={() => props.navigation.navigate('Meus Livros')}
+            icon={({ color, size }) => <Ionicons name="book" size={size} color={color} />}
+          />
+          <DrawerItem
+            label="Biblioteca"
+            onPress={() => props.navigation.navigate('Biblioteca')}
+            icon={({ color, size }) => <Ionicons name="library" size={size} color={color} />}
+          />
 
-      <View style={styles.divider} />
+          <View style={styles.divider} />
+        </>
+      )}
 
-      <Text style={styles.sectionTitle}>Funcionário</Text>
-      <DrawerItem
-        label="Gerenciar Clientes"
-        onPress={() => props.navigation.navigate('Gerenciar Clientes')}
-        icon={({ color, size }) => <Ionicons name="people" size={size} color={color} />}
-      />
-      <DrawerItem
-        label="Cadastrar Cliente"
-        onPress={() => props.navigation.navigate('Cadastrar Cliente')}
-        icon={({ color, size }) => <Ionicons name="person-add" size={size} color={color} />}
-      />
-      <DrawerItem
-        label="Gerenciar Livros"
-        onPress={() => props.navigation.navigate('Gerenciar Livros')}
-        icon={({ color, size }) => <Ionicons name="create" size={size} color={color} />}
-      />
-      <DrawerItem
-        label="Cadastrar Livro"
-        onPress={() => props.navigation.navigate('Cadastrar Livro')}
-        icon={({ color, size }) => <Ionicons name="book-outline" size={size} color={color} />}
-      />
-      <DrawerItem
-        label="Gerenciar Empréstimos"
-        onPress={() => props.navigation.navigate('Gerenciar Empréstimos')}
-        icon={({ color, size }) => <Ionicons name="clipboard" size={size} color={color} />}
-      />
-      <DrawerItem
-        label="Criar Empréstimo"
-        onPress={() => props.navigation.navigate('Criar Empréstimo')}
-        icon={({ color, size }) => <Ionicons name="add-circle" size={size} color={color} />}
-      />
+      {role === 'ADMIN' && (
+        <>
+          <Text style={styles.sectionTitle}>Funcionário</Text>
+          <DrawerItem
+            label="Gerenciar Clientes"
+            onPress={() => props.navigation.navigate('Gerenciar Clientes')}
+            icon={({ color, size }) => <Ionicons name="people" size={size} color={color} />}
+          />
+          <DrawerItem
+            label="Cadastrar Cliente"
+            onPress={() => props.navigation.navigate('Cadastrar Cliente')}
+            icon={({ color, size }) => <Ionicons name="person-add" size={size} color={color} />}
+          />
+          <DrawerItem
+            label="Gerenciar Livros"
+            onPress={() => props.navigation.navigate('Gerenciar Livros')}
+            icon={({ color, size }) => <Ionicons name="create" size={size} color={color} />}
+          />
+          <DrawerItem
+            label="Cadastrar Livro"
+            onPress={() => props.navigation.navigate('Cadastrar Livro')}
+            icon={({ color, size }) => <Ionicons name="book-outline" size={size} color={color} />}
+          />
+          <DrawerItem
+            label="Gerenciar Empréstimos"
+            onPress={() => props.navigation.navigate('Gerenciar Empréstimos')}
+            icon={({ color, size }) => <Ionicons name="clipboard" size={size} color={color} />}
+          />
+          <DrawerItem
+            label="Criar Empréstimo"
+            onPress={() => props.navigation.navigate('Criar Empréstimo')}
+            icon={({ color, size }) => <Ionicons name="add-circle" size={size} color={color} />}
+          />
+        </>
+      )}
     </DrawerContentScrollView>
   );
 };
